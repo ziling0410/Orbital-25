@@ -2,7 +2,6 @@ import java.util.stream.IntStream;
 import java.util.Optional;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.Comparator;
 
 class Shop {
     private final List<Server> serversInShop;
@@ -36,7 +35,7 @@ class Shop {
         return this.serversInShop
             .stream()
             .filter(x -> x.canQueue())
-            .min(Comparator.comparingInt(Server::getId));
+            .findFirst();
     }  
     
     @Override
@@ -45,9 +44,10 @@ class Shop {
             .toString();
     }
     
-    public Shop update(Customer customer, Server originalServer) {
+    public Shop update(Customer customer, Server originalServer, 
+            double newServiceTime) {
         Server updatedServer = originalServer.serve(customer, 
-                this.getServiceTime());
+                newServiceTime);
         List<Server> newServers = IntStream
             .rangeClosed(1, this.serversInShop.size())
             .mapToObj(x -> (this.serversInShop.get(x - 1)
@@ -75,5 +75,16 @@ class Shop {
                     this.serversInShop.get(x - 1))
             .toList();
         return new Shop(newServers, this.serviceTime);
+    }
+
+    public Optional<Server> getServer(Server server) {
+        return IntStream.rangeClosed(1, this.serversInShop.size())
+            .mapToObj(x -> this.serversInShop.get(x - 1))
+            .filter(x -> x.sameServer(server))
+            .findFirst();
+    }
+
+    public List<Server> getServers() {
+        return this.serversInShop;
     }
 }
