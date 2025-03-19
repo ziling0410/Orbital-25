@@ -6,7 +6,7 @@ class DoneEvent extends Event {
     }
 
     public Optional<Pair<Event,Shop>> next(Shop shop) {
-        return Optional.of(new Pair<Event, Shop>(this, shop));
+        return Optional.of(new Pair<Event,Shop>(this, shop));
     }
 
     @Override
