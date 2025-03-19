@@ -11,7 +11,8 @@ class Server {
         this.currentQueue = 0;
     }
     
-    private Server(int id, double serviceTime, int maxQueueLength, int currentQueue) {
+    private Server(int id, double serviceTime, int maxQueueLength, 
+            int currentQueue) {
         this.id = id;
         this.nextCustomerTime = serviceTime;
         this.maxQueueLength = maxQueueLength;
@@ -24,22 +25,25 @@ class Server {
     }
 
     public Server addToQueue() {
-        if (this.canQueue() && this.currentQueue > 0) {
+        if (this.canQueue()) {
             return new Server(this.id, this.nextCustomerTime, 
-                this.maxQueueLength, this.currentQueue - 1);
+                this.maxQueueLength, this.currentQueue + 1);
         }
         return this;
     }
 
     public Server removeFromQueue() {
-        return new Server(this.id, this.nextCustomerTime,
-                this.maxQueueLength, this.currentQueue + 1);
+        if (this.currentQueue > 0) {
+            return new Server(this.id, this.nextCustomerTime,
+                this.maxQueueLength, this.currentQueue - 1);
+        }
+        return this;
         
     }
 
     public Server serve(Customer customer, double serviceTime) {
-        double newServiceTime = customer.serveTill(serviceTime);
-        return new Server(this.id, newServiceTime, this.maxQueueLength, this.currentQueue);
+        return new Server(this.id, serviceTime, this.maxQueueLength, 
+                this.currentQueue);
     }
 
     public boolean canServe(Customer customer) {
@@ -54,7 +58,7 @@ class Server {
         return this.id == server.id;
     }
 
-    public double getServiceTime() {
+    public double getNextCustomerTime() {
         return this.nextCustomerTime;
     }
 
@@ -62,7 +66,7 @@ class Server {
         return this.currentQueue;
     }
 
-    public int getId() {
-        return this.id;
+    public boolean canServeAtTime(double time) {
+        return this.nextCustomerTime <= time;
     }
 }
