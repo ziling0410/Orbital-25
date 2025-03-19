@@ -7,8 +7,12 @@ class ArriveEvent extends Event {
 
     public Optional<Pair<Event,Shop>> next(Shop shop) {
         return shop.findServer(super.customer)
-            .map(x -> new Pair<Event,Shop>(new ServeEvent(super.customer, x,
-                            super.eventTime), shop))
+            .map(x -> {
+                double newEventTime = super.eventTime + shop.getServiceTime();
+                Shop newShop = shop.update(super.customer, x, newEventTime);
+                return new Pair<Event,Shop>(new ServeEvent(super.customer, x,
+                            super.eventTime, false, newEventTime), newShop);
+            })
             .or(() -> shop.findServerQueue()
                     .map(y -> {
                         Server newServer = y.addToQueue();
