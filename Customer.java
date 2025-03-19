@@ -17,14 +17,10 @@ class Customer {
     }
 
     public double serveTill(double serviceTime) {
-        return this.arrivalTime + serviceTime;
+        return serviceTime;
     }
 
     public int compareArrivalTime(Customer other) {
         return Double.compare(this.arrivalTime, other.arrivalTime);
-    }
-
-    public double getArrivalTime() {
-        return this.arrivalTime;
     }
 }
