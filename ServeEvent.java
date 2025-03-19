@@ -1,34 +1,72 @@
-import java.util.Optional;
+class Server {
+    private final int id;
+    private final double nextCustomerTime;
+    private final int maxQueueLength;
+    private final int currentQueue;
 
-class ServeEvent extends Event {
-    private final Server server;
-    private final boolean wasWaiting;
-    private final double serveTime;
-
-    ServeEvent(Customer customer, Server server, double eventTime, 
-            boolean wasWaiting, double serveTime) {
-        super(customer, eventTime);
-        this.server = server;
-        this.wasWaiting = wasWaiting;
-        this.serveTime = serveTime;
-    }
-
-    public Optional<Pair<Event,Shop>> next(Shop shop) {
-        //double newEventTime = super.eventTime + shop.getServiceTime();
-        Optional<Server> newServer = shop.getServer(this.server);
-        Optional<Shop> newShop = Optional.of(shop);
-        if (this.wasWaiting) {
-            newServer = newServer.map(x -> x.removeFromQueue());
-            newShop = newServer.map(x -> shop.removeQueue(x));
-        }
-        //newShop = shop.update(super.customer, newServer, newEventTime);
-        return newShop.map(x -> new Pair<Event,Shop>(new DoneEvent(
-                        super.customer, this.serveTime), x));
+    Server(int id, int maxQueueLength) {
+        this.id = id;
+        this.nextCustomerTime = 0.0;
+        this.maxQueueLength = maxQueueLength;
+        this.currentQueue = 0;
     }
     
+    private Server(int id, double serviceTime, int maxQueueLength, 
+            int currentQueue) {
+        this.id = id;
+        this.nextCustomerTime = serviceTime;
+        this.maxQueueLength = maxQueueLength;
+        this.currentQueue = currentQueue;
+    }
+
     @Override
     public String toString() {
-        return String.format("%.3f", super.eventTime) + " " + super.customer 
-            + " serves by " + this.server;
+        return "server " + this.id;
+    }
+
+    public Server addToQueue() {
+        if (this.canQueue()) {
+            return new Server(this.id, this.nextCustomerTime, 
+                this.maxQueueLength, this.currentQueue + 1);
+        }
+        return this;
+    }
+
+    public Server removeFromQueue() {
+        if (this.currentQueue > 0) {
+            return new Server(this.id, this.nextCustomerTime,
+                this.maxQueueLength, this.currentQueue - 1);
+        }
+        return this;
+        
+    }
+
+    public Server serve(Customer customer, double serviceTime) {
+        return new Server(this.id, serviceTime, this.maxQueueLength, 
+                this.currentQueue);
+    }
+
+    public boolean canServe(Customer customer) {
+        return customer.canBeServed(this.nextCustomerTime);
+    }
+
+    public boolean canQueue() {
+        return this.maxQueueLength > this.currentQueue;
+    }
+
+    public boolean sameServer(Server server) {
+        return this.id == server.id;
+    }
+
+    public double getNextCustomerTime() {
+        return this.nextCustomerTime;
+    }
+
+    public int getQueue() {
+        return this.currentQueue;
+    }
+
+    public boolean canServeAtTime(double time) {
+        return this.nextCustomerTime <= time;
     }
 }
