@@ -9,16 +9,24 @@ class WaitEvent extends Event {
     }
 
     public Optional<Pair<Event,Shop>> next(Shop shop) {
-        Server newServer = server.removeFromQueue();
-        Shop newShop = shop.removeQueue(newServer);
-        double newEventTime = Math.max(super.eventTime, newServer.getServiceTime());
-        return Optional.of(new Pair<Event,Shop>(new ServeEvent(super.customer,
-                    newServer, newEventTime), newShop));
+        double serviceTime = shop.getServiceTime();
+        double newEventTime = serviceTime + this.server.getNextCustomerTime();
+        //Shop newShop = shop.update(super.customer, this.server, newEventTime);
+        if (this.server.canServeAtTime(this.server.getNextCustomerTime())) {
+            Shop newShop = shop.update(super.customer, this.server, 
+                    newEventTime);
+            return Optional.of(new Pair<Event,Shop>(new ServeEvent(
+                            super.customer, this.server, 
+                            this.server.getNextCustomerTime(), true, newEventTime),
+                        newShop));
+        }
+        return Optional.of(new Pair<Event,Shop>(new WaitEvent(super.customer,
+                        serviceTime, this.server), shop));
     }
 
     @Override
     public double getWaitingTime() {
-        return this.server.getServiceTime() - super.eventTime;
+        return this.server.getNextCustomerTime() - super.eventTime;
     }
     
 
