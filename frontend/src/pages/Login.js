@@ -1,34 +1,36 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../App";
 
 function Login() {
-	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 	
 	const navigate = useNavigate();
 
-	const handleLogin = () => {
-		fetch("/login", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({username, password})
-		})
-		.then(data => data.json())
-		.then(data => setMessage(data.message))
-		.catch(error => setMessage("Error: " + error.message));
+	const handleLogin = async () => {
+		const { data, error } = await supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
+		
+		if (error) {
+			setMessage("Login failed: " + error.message);
+		} else {
+			setMessage("Login successful");
+			navigate("/todo");
+		}
 	};
 	
 	return (
 		<div>
 			<h2>Login</h2>
 			<input
-				type = "text"
-				placeholder = "Username" 
-				value = {username} 
-				onChange = {event => setUsername(event.target.value)} 
+				type = "email"
+				placeholder = "Email" 
+				value = {email} 
+				onChange = {event => setEmail(event.target.value)} 
 			/>
 			<br />
 			<input
