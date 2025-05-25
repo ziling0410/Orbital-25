@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function AddListings() {
 	const [have, setHave] = useState("");
+	const [image, setImage] = useState(null);
 	const [want, setWant] = useState("");
 	const [preferences, setPreferences] = useState("");
 	const [message, setMessage] = useState("");
@@ -25,12 +26,16 @@ function AddListings() {
 			setMessage("Error: User not found, please login first");
 		}
 		
+		const formData = new FormData();
+		formData.append("have", have);
+		formData.append("haveImage", image);
+		formData.append("want", want);
+		formData.append("preferences", preferences);
+		formData.append("id", userId);
+		
 		const response = await fetch("/add-listings", {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({have: have, want: want, preferences: preferences, id: userId})
+			body: formData,
 		});
 		
 		if (response.ok) {
@@ -57,6 +62,12 @@ function AddListings() {
 				onChange = {event => setHave(event.target.value)} 
 			/>
 			<br />
+			<input
+				type = "file"
+				placeholder = "What you have (image)"
+				onChange = {event => setImage(event.target.files[0])}
+			/>
+			<br />
 			<input 
 				type = "text"
 				placeholder = "What you want"
@@ -71,7 +82,10 @@ function AddListings() {
 				onChange = {event => setPreferences(event.target.value)}
 			/>
 			<br />
-			<button onClick = {handleListing}>Add</button>
+			<button onClick = {event => {
+				event.preventDefault();
+				handleListing();
+			}}>Add</button>
 			<br />
 			<p>{message}</p>
 			<br />
