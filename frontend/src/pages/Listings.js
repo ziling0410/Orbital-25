@@ -3,7 +3,7 @@ import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 
 function Listings() {
-	const [listings, setListings] = useState([])
+	const [listings, setListings] = useState([]);
 	const navigate = useNavigate();
 	
 	useEffect(() => {
@@ -22,13 +22,30 @@ function Listings() {
 		<div>
 			<h1>List of Trades</h1>
 			<br />
-			<ul>
-				{listings.map((item, index) => (
-					<li key = {index}>
-						{JSON.stringify(item)}
-					</li>
-				))}
-			</ul>
+			<table>
+				<thead>
+					<tr>
+						<th>No.</th>
+						<th>Have</th>
+						<th>Want</th>
+						<th>Preferences</th>
+						<th>Username</th>
+					</tr>
+				</thead>
+				<tbody>
+					{listings.map((item, index) => (
+						<tr key = {index}>
+							<td>{index + 1}</td>
+							<td>{item.have}</td>
+							<td>{item.want}</td>
+							<td>{item.preferences}</td>
+							<td>{item.username}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+			<br />
+			<button onClick = {() => navigate("/add-listings")}>Add a Listing</button>
 			<br />
 			<button onClick = {handleLogout}>Logout</button>
 		</div>
