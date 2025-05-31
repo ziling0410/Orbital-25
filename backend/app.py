@@ -84,16 +84,3 @@ def add_listings():
 
 if __name__ == "__main__":
     app.run()
-
-"""
-To run, go to command prompt, go to the directory with this file, then install flask using:
-pip install flask
-Then, run this file using:
-python app.py
-
-then go to cd frontend
-npm install
-npm install react-router-dom
-npm install @supabase/supabase-js
-npm start
-"""

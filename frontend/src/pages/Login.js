@@ -10,7 +10,7 @@ function Login() {
 	const navigate = useNavigate();
 
 	const handleLogin = async () => {
-		const { data, error } = await supabase.auth.signInWithPassword({
+		const { error } = await supabase.auth.signInWithPassword({
 			email,
 			password,
 		});
@@ -19,7 +19,7 @@ function Login() {
 			setMessage("Login failed: " + error.message);
 		} else {
 			setMessage("Login successful");
-			navigate("/todo");
+			navigate("/get-listings");
 		}
 	};
 	

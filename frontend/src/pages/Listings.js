@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 function Listings() {
 	const [listings, setListings] = useState([]);
@@ -8,47 +9,45 @@ function Listings() {
 	const [searchResults, setSearchResults] = useState([]);
 	const [hasSearched, setHasSearched] = useState(false);
 	const navigate = useNavigate();
-	
+
 	useEffect(() => {
 		fetch("http://localhost:3000/get-listings")
 			.then((data) => data.json())
 			.then((data) => setListings(data))
 			.catch((error) => console.log("Error fetching listings: ", error));
 	}, []);
-	
+
 	const handleLogout = async () => {
 		await supabase.auth.signOut();
 		navigate("/");
 	};
 
-	const searchBar = async () => {
+	const handleSearch = async () => {
 		setHasSearched(true);
 		const response = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}`);
-		
+
 		if (response.ok) {
 			const data = await response.json();
 			setSearchResults(data);
 		}
 	};
+
+	const handleClearSearch = async () => {
+		setSearchResults([]);
+		setSearchInput("");
+        setHasSearched(false);
+	}
 	
 	return (
 		<div>
 			<h1>List of Trades</h1>
 			<br />
-			<input 
-				type = "text"
-				placeholder = "Type to search"
-				value = {searchInput}
-				onChange = {event => setSearchInput(event.target.value)} 
+			<SearchBar
+				searchInput = {searchInput}
+				setSearchInput = {setSearchInput}
+				handleSearch = {handleSearch}
+				handleClearSearch={handleClearSearch}
 			/>
-			<br />
-			<button onClick = {searchBar}>Search</button>
-			<br />
-			<button onClick = {() => {
-				setSearchResults([]);
-				setSearchInput("");
-				setHasSearched(false);
-			}}>Clear Search</button>
 			<br />
 			<table>
 				<thead>

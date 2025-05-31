@@ -1,7 +1,114 @@
-.p {
-	margin-left: 30px;
+@font-face {
+    font-family: 'Reborn Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: url('./fonts/Reborn.woff') format('woff');
 }
-
-.h1 {
-	margin-left: 30px;
+@font-face {
+    font-family: 'Hero Light';
+    font-style: normal;
+    font-weight: normal;
+    src: url('./fonts/HeroLight-Light.woff') format('woff');
+}
+.reborn {
+    font-family: 'Reborn Regular', sans-serif;
+    font-weight: 100;
+    font-size: 100px;
+}
+.hero {
+    font-family: 'Hero Light', sans-serif;
+    font-weight: 1000;
+    font-size: 25px;
+}
+.entire {
+    display: flex;
+    height: 100vh;
+    background-color: #cdcfc0;
+    flex-direction: column;
+}
+.top {
+    flex: 0 0 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+.top-center {
+    flex: 0 0 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.top-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bottom {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 100%
+}
+.left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+.left-top {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+.left-bottom {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+.left-top img {
+    height: 250px;
+}
+.right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%
+}
+.right-box {
+    background-color: #f1ebe5;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.button {
+    background-color: #f1ebe5;
+    color: black;
+    padding: 2px 20px;
+    text-align: center;
+    font-size: 25px;
+    cursor: pointer;
+}
+.trade {
+    background-color: #f1ebe5;
+    color: black;
+    padding: 4px 10px;
+    text-align: center;
+    font-size: 30px;
+    cursor: pointer;
+    margin: 2px;
+    border-radius: 10px;
+    width: 80%;
+    margin-top: 50px;
 }
