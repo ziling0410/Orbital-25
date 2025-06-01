@@ -10,6 +10,12 @@
     font-weight: normal;
     src: url('./fonts/HeroLight-Light.woff') format('woff');
 }
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: normal;
+    src: url('./fonts/CormorantGaramond-SemiBold.ttf') format('truetype');
+}
 .reborn {
     font-family: 'Reborn Regular', sans-serif;
     font-weight: 100;
@@ -111,4 +117,6 @@
     border-radius: 10px;
     width: 80%;
     margin-top: 50px;
+    font-family: 'Cormorand Garamond', sans-serif;
+    font-weight: 100;
 }
