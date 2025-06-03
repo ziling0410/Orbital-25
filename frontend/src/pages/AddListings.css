@@ -1,0 +1,10 @@
+.add-button {
+	font-size: 18px;
+	margin-left: -3px;
+	background-color: #f1ebe5;
+	color: black;
+	padding: 4px 10px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 8px;
+}

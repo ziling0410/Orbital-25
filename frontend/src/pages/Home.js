@@ -41,7 +41,7 @@ function Home() {
 	}
 	
 	return (
-		<div className="entire">
+		<div className="home-entire">
 			<div className="top">
 				<div className="top-center">
 					<SearchBar

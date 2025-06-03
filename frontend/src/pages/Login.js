@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../App";
+import "./Login.css";
 
 function Login() {
 	const [email, setEmail] = useState("");
@@ -24,9 +25,10 @@ function Login() {
 	};
 	
 	return (
-		<div>
-			<h2>Login</h2>
+		<div className="login-entire">
+			<h1>Login</h1>
 			<input
+				className="input"
 				type = "email"
 				placeholder = "Email" 
 				value = {email} 
@@ -34,17 +36,18 @@ function Login() {
 			/>
 			<br />
 			<input
+                className="input"
 				type = "password"
 				placeholder = "Password"
 				value = {password}
 				onChange = {event => setPassword(event.target.value)}
 			/>
 			<br />
-			<button onClick = {handleLogin}>Login</button>
+			<button className="login-button" onClick = {handleLogin}>Login</button>
 			<br />
 			<p>{message}</p>
 			<br />
-			<button onClick = {() => navigate("/")}>Back to Home</button>
+			<button className="login-button" onClick = {() => navigate("/")}>Back to Home</button>
 		</div>
 	);
 }

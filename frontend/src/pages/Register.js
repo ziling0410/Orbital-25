@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../App";
+import "./Register.css";
 
 function Register() {
 	const [username, setUsername] = useState("");
@@ -42,9 +43,10 @@ function Register() {
 	};
 	
 	return (
-		<div>
-			<h2>Register</h2>
+		<div className="register-entire">
+			<h1>Register</h1>
 			<input
+                className="input"
 				type = "text"
 				placeholder = "Username" // Short hint describing expected value
 				value = {username} // Value of the <input> element 
@@ -55,6 +57,7 @@ function Register() {
 			/>
 			<br />
 			<input 
+                className="input"
 				type = "email"
 				placeholder = "Email"
 				value = {email}
@@ -62,17 +65,18 @@ function Register() {
 			/>
 			<br />
 			<input
+                className="input"
 				type = "password"
 				placeholder = "Password"
 				value = {password}
 				onChange = {event => setPassword(event.target.value)}
 			/>
 			<br />
-			<button onClick = {handleRegister}>Register</button>
+			<button className="register-button" onClick = {handleRegister}>Register</button>
 			<br />
 			<p>{message}</p>
 			<br />
-			<button onClick = {() => navigate("/")}>Back to Home</button>
+			<button className="register-button" onClick = {() => navigate("/")}>Back to Home</button>
 		</div>
 	);
 }

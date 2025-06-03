@@ -1,0 +1,25 @@
+.login-entire {
+	margin-left: 25px;
+}
+
+.input {
+	border: 2px solid black;
+	border-radius: 10px;
+	color: black;
+	margin-right: 5px;
+	font-size: 20px;
+	margin-bottom: 10px;
+	width: 500px;
+	padding: 5px;
+}
+
+.login-button {
+	font-size: 15px;
+	margin-left: -3px;
+	background-color: #f1ebe5;
+	color: black;
+	padding: 4px 10px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 8px;
+}

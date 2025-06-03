@@ -32,6 +32,14 @@ def save_username():
     users.insert_one({"id": user_id, "username": username})
     return jsonify({"message": "User registered succesfully"}), 201 # Return message & 201 Created response
 
+@app.route("/get-username", methods = ["POST"])
+def get_username():
+    data = request.json
+    user_id = data["id"]
+
+    user = users.find_one({"id": user_id})
+    return jsonify({"username": user["username"]}), 200
+
 @app.route("/image/<id>", methods = ["GET"])
 def get_image(id):
     image = fs.get(ObjectId(id))
