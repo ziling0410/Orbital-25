@@ -26,20 +26,20 @@ function Home() {
 		else {
 			navigate("/get-listings");
 		}
-	}
+	};
 
 	const handleTrade = async () => {
 		if (!userId) {
 			navigate("/login");
 		} else {
 			navigate("/get-listings");
-        }
-	}
+		}
+	};
 
-	const handleClearSearch = async () => {
+	const handleClearSearch = () => {
 		setSearchInput("");
-	}
-	
+	};
+		
 	return (
 		<div className="home-entire">
 			<div className="top">
@@ -47,8 +47,8 @@ function Home() {
 					<SearchBar
 						searchInput={searchInput}
 						setSearchInput={setSearchInput}
-						onSearch={handleSearch}
-						onClear={handleClearSearch}
+						handleSearch={handleSearch}
+                        handleClearSearch={handleClearSearch}
 					/>
 				</div>
 				<div className="top-right">

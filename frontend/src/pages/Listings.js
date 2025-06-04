@@ -72,12 +72,11 @@ function Listings() {
 			setSearchResults(data);
 		}
 	};
-
-	const handleClearSearch = async () => {
+	const handleClearSearch = () => {
 		setSearchResults([]);
 		setSearchInput("");
-        setHasSearched(false);
-	}
+		setHasSearched(false);
+	};
 	
 	return (
 		<div className="entire">

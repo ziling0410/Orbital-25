@@ -1,7 +1,8 @@
 import React from "react";
 import "./SearchBar.css";
 
-function SearchBar({ searchInput, setSearchInput, onSearch, onClear }) {
+function SearchBar({ searchInput, setSearchInput, handleSearch, handleClearSearch }) {
+
 	return (
 		<div>
 			<input
@@ -10,9 +11,13 @@ function SearchBar({ searchInput, setSearchInput, onSearch, onClear }) {
 				placeholder="Type to search"
 				value={searchInput}
 				onChange={event => setSearchInput(event.target.value)}
+				onKeyDown={event => {
+					if (event.key === "Enter") {
+						handleSearch();
+					}
+				}}
 			/>
-			<button className="button" onClick={onSearch}>Search</button>
-			<button className="button" onClick={onClear}>Clear</button>
+			<button className="button" onClick={handleClearSearch}>Clear Search Results</button>
 		</div>
 	)
 }

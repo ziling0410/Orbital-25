@@ -12,13 +12,3 @@
 	font-size: 25px;
 	width: 500px;
 }
-.button {
-	background-color: #f1ebe5;
-	color: black;
-	padding: 4px 10px;
-	text-align: center;
-	font-size: 20px;
-	cursor: pointer;
-	margin: 2px;
-	border-radius: 10px;
-}
