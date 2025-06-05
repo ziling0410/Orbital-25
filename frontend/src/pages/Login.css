@@ -1,7 +1,6 @@
 .login-entire {
 	margin-left: 25px;
 }
-
 .input {
 	border: 2px solid black;
 	border-radius: 10px;
@@ -12,7 +11,6 @@
 	width: 500px;
 	padding: 5px;
 }
-
 .login-button {
 	font-size: 15px;
 	margin-left: -3px;
@@ -22,4 +20,12 @@
 	text-align: center;
 	cursor: pointer;
 	border-radius: 8px;
+}
+.signup-text {
+	float: left;
+}
+.signup-button {
+    float: left;
+    margin-left: 10px;
+	margin-top: 15px;
 }

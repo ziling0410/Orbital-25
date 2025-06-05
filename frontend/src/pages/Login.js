@@ -47,6 +47,15 @@ function Login() {
 			<br />
 			<p>{message}</p>
 			<br />
+			<div className="signup-text">
+				<p>Don't have an account yet?</p>
+			</div>
+			<div className="signup-button">
+				<button className="login-button" onClick={() => navigate("/register")}>Click to sign up!</button>
+			</div>
+			<br />
+			<br />
+			<br />
 			<button className="login-button" onClick = {() => navigate("/")}>Back to Home</button>
 		</div>
 	);
