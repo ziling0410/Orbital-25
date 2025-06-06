@@ -5,6 +5,9 @@ import "./Register.css";
 
 function Register() {
 	const [username, setUsername] = useState("");
+	const [image, setImage] = useState(null);
+	const [description, setDescription] = useState("");
+    const [location, setLocation] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
@@ -22,14 +25,17 @@ function Register() {
 		}
 		
 		const user = data.user;
-		
+		const formData = new FormData();
+		formData.append("username", username);
+		formData.append("profilePicture", image);
+		formData.append("id", user.id);
+		formData.append("description", description);
+		formData.append("location", location);
+				
 		if (user) {
 			const response = await fetch("/save-username", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json", // Tells the server the format of the request's body
-				},
-				body: JSON.stringify({id: user.id, username: username}) // Actual data to send in the form of a string (convert from JSON to string using stringify())
+				body: formData,
 			});
 		
 			if (response.ok) {
@@ -41,19 +47,42 @@ function Register() {
 			}
 		}
 	};
-	
+		
 	return (
 		<div className="register-entire">
 			<h1>Register</h1>
 			<input
                 className="input"
 				type = "text"
-				placeholder = "Username" // Short hint describing expected value
-				value = {username} // Value of the <input> element 
+				placeholder="Username" // Short hint describing expected value
+                value={username} // value of the input field is set to the username state variable
 				onChange = {event => setUsername(event.target.value)} 
 				// Update the username happens when a user changes the content of the input field 
 				// event - event object React passes when something happens
 				// event.target - HTML element that triggered the event (HTMLInputElement)
+			/>
+			<br />
+			<input
+				className="input"
+				type="file"
+				placeholder="Profile Picture"
+				onChange={event => setImage(event.target.files[0])}
+			/>
+			<br />
+			<input
+				className="input"
+				type="text"
+				placeholder="Description"
+                value={description}
+				onChange={event => setDescription(event.target.value)}
+			/>
+			<br />
+			<input
+				className="input"
+				type="text"
+				placeholder="Location"
+                value={location}
+				onChange={event => setLocation(event.target.value)}
 			/>
 			<br />
 			<input 

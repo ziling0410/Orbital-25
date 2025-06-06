@@ -19,9 +19,12 @@ fs = gridfs.GridFS(db)
 
 @app.route("/save-username", methods = ["POST"])
 def save_username():
-    data = request.json # Gets JSON body sent from frontend
+    data = request.form
     user_id = data["id"]
     username = data["username"]
+    profilePic = request.files.get("profilePicture")
+    description = data["description"]
+    location = data["location"]
 
     if not user_id or not username:
         return jsonify({"message": "Missing fields"}), 400
@@ -29,7 +32,8 @@ def save_username():
     if users.find_one({"username": username}):
         return jsonify({"message": "Username already exists"}), 409 # Return message & 409 Conflict error
 
-    users.insert_one({"id": user_id, "username": username})
+    image_id = fs.put(profilePic, filename = profilePic.filename, content_type = profilePic.content_type)
+    users.insert_one({"id": user_id, "username": username, "profilePictureId": image_id, "description": description, "location": location})
     return jsonify({"message": "User registered succesfully"}), 201 # Return message & 201 Created response
 
 @app.route("/get-username", methods = ["POST"])
@@ -87,7 +91,7 @@ def add_listings():
 
     image_id = fs.put(haveImage, filename = haveImage.filename, content_type = haveImage.content_type)
     
-    trade_listings.insert_one({"have": have, "haveImageId": image_id, "want": want, "preferences": preferences, "username": user["username"], "created_at": datetime.now()})
+    trade_listings.insert_one({"have": have, "haveImageId": image_id, "want": want, "preferences": preferences, "id": user["id"], "created_at": datetime.now()})
     return jsonify({"message": "Listing added successfully"}), 201
 
 if __name__ == "__main__":
