@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Listings from "./pages/Listings";
 import AddListings from "./pages/AddListings";
+import Profile from "./pages/Profile";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
@@ -40,6 +41,7 @@ function App() {
 					<Route path = "/register" element = {session ? <Navigate to = "/get-listings" /> : <Register />} />
 					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
+					<Route path = "/profile" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
