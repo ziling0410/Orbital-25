@@ -72,7 +72,9 @@ function Home() {
     return (
         <div className="home-entire">
             <div className="top">
-                <div className="home-logo" onClick={handleHomeClick}></div>
+                <div className="top-left" onClick={handleHomeClick}>
+                    <h1 className="home-brand">MERCHMATES</h1>
+                </div>
                 <div className="top-center">
                     <SearchBar
                         searchInput={searchInput}
@@ -99,10 +101,10 @@ function Home() {
                             </div>
                         </div>
                     ) : (
-                        <>
+                        <div className="auth-buttons">
                             <button className="button" onClick={() => navigate("/register")}>Register</button>
                             <button className="button" onClick={() => navigate("/login")}>Login</button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
