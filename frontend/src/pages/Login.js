@@ -20,7 +20,7 @@ function Login() {
 			setMessage("Login failed: " + error.message);
 		} else {
 			setMessage("Login successful");
-			navigate("/get-listings");
+			navigate("/");
 		}
 	};
 	

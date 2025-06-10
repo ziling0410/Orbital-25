@@ -67,9 +67,6 @@
     cursor: pointer;
     transition: transform 0.3s ease;
 }
-.profile-container:hover {
-    transform: scale(1.05);
-}
 .profile-picture {
     width: 50px;
     height: 50px;
@@ -172,4 +169,7 @@
 
 .home-brand:hover {
     color: #0077cc;
+}
+.auth-buttons {
+    display: flex;
 }

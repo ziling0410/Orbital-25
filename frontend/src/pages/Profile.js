@@ -226,7 +226,7 @@ function Profile() {
 				<div className="tab-content">{renderTabContent()}</div>
 				{message && <p className="message">{message}</p>}
 
-				<button className="back-button" onClick={() => navigate("/get-listings")}>Back to Listings</button>
+				<button className="button" onClick={() => navigate("/get-listings")}>Back to Listings</button>
 			</main>
 
 			{showReviewModal && (
