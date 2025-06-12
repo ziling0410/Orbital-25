@@ -15,18 +15,17 @@ function AddListings() {
 	
 	useEffect(() => {
 		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
+			const { data, error } = await supabase.auth.getUser();
+			if (data?.user) {
+				setUserId(data.user.id);
+			} else {
+				setMessage("Error: " + error.message);
 			}
 		};
 		getUser();
 	}, []);
 	
 	const handleListing = async () => {
-		if (!userId) {
-			setMessage("Error: User not found, please login first");
-		}
 		
 		const formData = new FormData();
 		formData.append("have", have);
@@ -82,12 +81,12 @@ function AddListings() {
 	}, [userId]);
 	
 	return (
-		<div className="entire">
-			<div className="top">
-				<div className="top-left">
+		<div className="addlistings-entire">
+			<div className="addlistings-top">
+				<div className="addlistings-top-left">
 					<h1>Add a Listing</h1>
 				</div>
-				<div className="top-right">
+				<div className="addlistings-top-right">
 					<p>{username}</p>
 				</div>
 			</div>

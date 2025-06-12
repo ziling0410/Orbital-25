@@ -1,5 +1,6 @@
 .login-entire {
 	margin-left: 25px;
+	margin-top: 30px;
 }
 .input {
 	border: 2px solid black;
@@ -27,5 +28,4 @@
 .signup-button {
     float: left;
     margin-left: 10px;
-	margin-top: 15px;
 }

@@ -37,8 +37,8 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path = "/" element = {<Home />} />
-					<Route path = "/login" element = {session ? <Navigate to = "/get-listings" /> : <Login />} />
-					<Route path = "/register" element = {session ? <Navigate to = "/get-listings" /> : <Register />} />
+					<Route path = "/login" element = {session ? <Navigate to = "/" /> : <Login />} />
+					<Route path = "/register" element = {session ? <Navigate to = "/" /> : <Register />} />
 					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/profile" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />

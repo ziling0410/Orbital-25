@@ -12,3 +12,13 @@
 	font-size: 25px;
 	width: 500px;
 }
+.button {
+	background-color: #f1ebe5;
+	color: black;
+	padding: 2px 20px;
+	text-align: center;
+	font-size: 22px;
+	cursor: pointer;
+	margin-right: 5px;
+	border-radius: 10px;
+}

@@ -1,13 +1,102 @@
-.entire {
-	margin-top: 30px;
-	margin-left: 20px;
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: normal;
+	font-weight: normal;
+	src: url('./fonts/CormorantGaramond-SemiBold.ttf') format('truetype');
 }
-.top-right {
-	font-size: 20px;
+.listings-entire {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+.listings-top {
+	flex: 0 0 10%;
+	display: flex;
+	flex-direction: row;
+}
+.listings-top-left {
+	flex: 0 0 10%;
+	display: flex;
 	justify-content: flex-end;
-	margin-right: 100px;
+	align-items: center;
+	cursor: pointer;
 }
-.button {
+.listings-top-center {
+	flex: 0 0 80%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.listings-top-right {
+	flex: 1;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	font-size: 25px;
+}
+.listings-center {
+	flex: 0 0 80%;
+	display: flex;
+	flex-direction: row;
+}
+.listings-center-left, .listings-center-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	height: 100%;
+}
+.listings-center-left-box, .listings-center-right-box {
+    background-color: #f1ebe5;
+    width: 60%;
+    height: 60%;
+    border-radius: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.prev-button, .next-button {
+	flex: 0 0 10%;
+	display: flex;
+	justify-content: flex-start;
+	padding: 20px;
+}
+.listings-center-center {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.listings-bottom {
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 20px;
+}
+.listings-card {
+    font-family: 'Cormorant Garamond', serif;
 	font-size: 20px;
-	border-radius: 10px;
+	text-align: center;
+	width: 80%;
+}
+.function-button {
+    background-color: #f1ebe5;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.nav-button {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	font-size: 30px;
+	background-color: #f1ebe5;
+	cursor: pointer;
 }

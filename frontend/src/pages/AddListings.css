@@ -1,3 +1,24 @@
+.addlistings-entire {
+	margin-left: 25px;
+	margin-top: 30px;
+}
+.addlistings-top {
+	display: flex;
+	flex-direction: row;
+}
+.addlistings-top-left {
+	flex: 0 0 90%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+.addlistings-top-right {
+	flex: 1;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	font-size: 25px;
+}
 .add-button {
 	font-size: 18px;
 	margin-left: -3px;
