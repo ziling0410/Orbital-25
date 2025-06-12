@@ -1,3 +1,4 @@
+import re
 from flask import Flask, render_template, request, jsonify, send_file
 from pymongo import MongoClient, DESCENDING
 from flask_cors import CORS
@@ -40,6 +41,7 @@ def save_username():
 def get_username():
     data = request.json
     user_id = data["id"]
+    print(user_id)
 
     user = users.find_one({"id": user_id})
     return jsonify({"username": user["username"]}), 200
@@ -52,6 +54,9 @@ def get_image(id):
 @app.route("/search-listings", methods = ["GET"])
 def search_listings():
     query = request.args.get("keyword", "").strip()
+    user_id = request.args.get("id")
+    exclude_user_id = request.args.get("excludeId")
+
     if not query:
         return jsonify([]), 200
 
@@ -62,7 +67,12 @@ def search_listings():
         ]
     }
 
-    listings = list(trade_listings.find(search_filter, {"_id": 0}).sort("created_at", DESCENDING).limit(20))
+    if user_id:
+        search_filter["id"] = user_id
+    elif exclude_user_id:
+        search_filter["id"] = {"$ne": exclude_user_id}
+
+    listings = list(trade_listings.find(search_filter, {"_id": 0}).sort("created_at", DESCENDING))
     for listing in listings:
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
@@ -70,7 +80,16 @@ def search_listings():
 
 @app.route("/get-listings", methods = ["GET"])
 def get_listings():
-    listings = list(trade_listings.find({}, {"_id": 0}).sort("created_at", DESCENDING).limit(20))
+    user_id = request.args.get("id")
+    exclude_user_id = request.args.get("excludeId")
+    query = {}
+
+    if user_id:
+        query["id"] = user_id
+    elif exclude_user_id:
+        query["id"] = {"$ne": exclude_user_id}
+
+    listings = list(trade_listings.find(query, {"_id": 0}).sort("created_at", DESCENDING))
     for listing in listings:
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
@@ -87,7 +106,7 @@ def add_listings():
     user = users.find_one({"id": user_id})
 
     if not user:
-        return jsonify({"message": "Error: User not found, please login first"}), 401 # Unauthorized
+        return jsonify({"message": "User not found, please login first"}), 401 # Unauthorized
 
     image_id = fs.put(haveImage, filename = haveImage.filename, content_type = haveImage.content_type)
     

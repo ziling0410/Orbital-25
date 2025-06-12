@@ -32,25 +32,80 @@
     background-color: #cdcfc0;
     flex-direction: column;
 }
-.top {
+.home-top {
     flex: 0 0 10%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
 }
-.top-center {
+.home-top-left {
+    flex: 0 0 10%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+}
+.home-top-center {
     flex: 0 0 80%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.top-right {
+.home-top-right {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px
+    gap: 10px;
+}
+.home-bottom {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 100%;
+}
+.home-bottom-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+.home-bottom-left-top {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+.home-bottom-left-bottom {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+.home-bottom-left-top img {
+    height: 250px;
+}
+.home-bottom-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.home-bottom-right-box {
+    background-color: #f1ebe5;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 20px;
 }
 .user-info {
     display: flex;
@@ -78,53 +133,6 @@
 .profile-picture:hover {
     border-color: #333;
 }
-.bottom {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    height: 100%
-}
-.left {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100%;
-}
-.left-top {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-}
-.left-bottom {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-}
-.left-top img {
-    height: 250px;
-}
-.right {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%
-}
-.right-box {
-    background-color: #f1ebe5;
-    width: 80%;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
 .button {
     background-color: #f1ebe5;
     color: black;
@@ -148,15 +156,6 @@
     font-family: 'Cormorand Garamond', sans-serif;
     font-weight: 100;
 }
-.top-left {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 100px;
-    cursor: pointer;
-}
-
 .home-brand {
     font-family: 'Reborn Regular', sans-serif;
     font-size: 28px;
@@ -166,10 +165,12 @@
     user-select: none;
     cursor: pointer;
 }
-
 .home-brand:hover {
     color: #0077cc;
 }
 .auth-buttons {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
 }

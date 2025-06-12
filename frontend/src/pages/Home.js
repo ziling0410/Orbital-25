@@ -71,11 +71,11 @@ function Home() {
 
     return (
         <div className="home-entire">
-            <div className="top">
-                <div className="top-left" onClick={handleHomeClick}>
+            <div className="home-top">
+                <div className="home-top-left" onClick={handleHomeClick}>
                     <h1 className="home-brand">MERCHMATES</h1>
                 </div>
-                <div className="top-center">
+                <div className="home-top-center">
                     <SearchBar
                         searchInput={searchInput}
                         setSearchInput={setSearchInput}
@@ -83,7 +83,7 @@ function Home() {
                         handleClearSearch={handleClearSearch}
                     />
                 </div>
-                <div className="top-right">
+                <div className="home-top-right">
                     {userId ? (
                         <div className="user-info">
                             <span className="username">
@@ -108,18 +108,18 @@ function Home() {
                     )}
                 </div>
             </div>
-            <div className="bottom">
-                <div className="left">
-                    <div className="left-top">
+            <div className="home-bottom">
+                <div className="home-bottom-left">
+                    <div className="home-bottom-left-top">
                         <img src="/home.png" alt="Icon"></img>
                         <h1 className="reborn">MERCHMATES</h1>
                     </div>
-                    <div className="left-bottom">
+                    <div className="home-bottom-left-bottom">
                         <p className="hero">CONNECTING FANS WORLDWIDE WITH A SIMPLE CLICK</p>
                     </div>
                 </div>
-                <div className="right">
-                    <div className="right-box">
+                <div className="home-bottom-right">
+                    <div className="home-bottom-right-box">
                         <button className="trade" onClick={handleTrade}>Trade</button>
                     </div>
                 </div>

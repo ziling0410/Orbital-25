@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
@@ -7,18 +7,12 @@ import "./Listings.css";
 function Listings() {
 	const [userId, setUserId] = useState(null);
 	const [username, setUsername] = useState("");
-	const [listings, setListings] = useState([]);
+	const [myListings, setMyListings] = useState([]);
+	const [otherListings, setOtherListings] = useState([]);
+	const [myIndex, setMyIndex] = useState(0);
+    const [otherIndex, setOtherIndex] = useState(0);
 	const [searchInput, setSearchInput] = useState("");
-	const [searchResults, setSearchResults] = useState([]);
-	const [hasSearched, setHasSearched] = useState(false);
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		fetch("http://localhost:3000/get-listings")
-			.then((data) => data.json())
-			.then((data) => setListings(data))
-			.catch((error) => console.log("Error fetching listings: ", error));
-	}, []);
 
 	useEffect(() => {
 		const getUser = async () => {
@@ -56,7 +50,33 @@ function Listings() {
 			fetchUsername();
 		}
 	}, [userId]);
+
+	const fetchListings = useCallback(async () => {
+		const responseOthers = await fetch(`http://localhost:3000/get-listings?excludeId=${userId}`);
+		const responseSelf = await fetch(`http://localhost:3000/get-listings?id=${userId}`);
+		const dataOthers = await responseOthers.json();
+		const dataSelf = await responseSelf.json();
+		setMyListings(dataSelf);
+		setOtherListings(dataOthers);
+	}, [userId]);
+
+	useEffect(() => {
+		fetchListings();
+	}, [userId, fetchListings]);
+
+	const displayListings = (listing) => {
+		return (
+			<div className="listings-card">
+				<h3>wtt - {listing.have}</h3>
+				<img src={`http://localhost:3000${listing.image_url}`} alt="Item" />
+				<h3>want - {listing.want}</h3>
+			</div>
+		)
+	}
 	
+	const handleHomeClick = () => {
+		navigate("/");
+	};
 
 	const handleLogout = async () => {
 		await supabase.auth.signOut();
@@ -64,24 +84,26 @@ function Listings() {
 	};
 
 	const handleSearch = async () => {
-		setHasSearched(true);
-		const response = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}`);
-
-		if (response.ok) {
-			const data = await response.json();
-			setSearchResults(data);
-		}
+		const searchResponseOthers = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
+		const searchResponseSelf = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}&id=${userId}`);
+		const searchDataOthers = await searchResponseOthers.json();
+		const searchDataSelf = await searchResponseSelf.json();
+		setOtherListings(searchDataOthers);
+		setMyListings(searchDataSelf);
 	};
+
 	const handleClearSearch = () => {
-		setSearchResults([]);
+		fetchListings();
 		setSearchInput("");
-		setHasSearched(false);
 	};
 	
 	return (
-		<div className="entire">
-			<div className="top">
-                <div className="top-center">
+		<div className="listings-entire">
+			<div className="listings-top">
+				<div className="listings-top-left" onClick={handleHomeClick}>
+					<h1 className="home-brand">MERCHMATES</h1>
+				</div>
+				<div className="listings-top-center">
 					<SearchBar
 						searchInput={searchInput}
 						setSearchInput={setSearchInput}
@@ -89,42 +111,44 @@ function Listings() {
 						handleClearSearch={handleClearSearch}
 					/>
 				</div>
-				<div className="top-right">
+				<div className="listings-top-right">
 					<p>{username}</p>
 				</div>
 			</div>
-			<br />
-			<table>
-				<thead>
-					<tr>
-						<th>No.</th>
-						<th>Have</th>
-						<th>Image</th>
-						<th>Want</th>
-						<th>Preferences</th>
-						<th>Username</th>
-					</tr>
-				</thead>
-				<tbody>
-					{(hasSearched ? searchResults : listings).map((item, index) => (
-						<tr key = {index}>
-							<td>{index + 1}</td>
-							<td>{item.have}</td>
-							<td>{<img src = {`http://localhost:3000${item.image_url}`} alt = "Item" width = "200" />}</td>
-							<td>{item.want}</td>
-							<td>{item.preferences}</td>
-							<td>{item.username}</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-			<br />
-			<button className="button" onClick = {() => navigate("/add-listings")}>Add a Listing</button>
-			<br />
-			<br />
-			<button className="button" onClick = {handleLogout}>Logout</button>
+			<div className="listings-center">
+				<div className="listings-center-left">
+					<div className="listings-center-left-box">
+						<div className="prev-button">
+							<button className="nav-button" onClick={() => setOtherIndex(i => Math.max(i - 1, 0))}>˄</button>
+						</div>
+						<div className="listings-center-center">
+							{otherListings.length > 0 && displayListings(otherListings[otherIndex])}
+						</div>
+                        <div className="next-button">
+							<button className="nav-button" onClick={() => setOtherIndex(i => Math.min(i + 1, otherListings.length - 1))}>˅</button>
+						</div>
+					</div>
+				</div>
+				<div className="listings-center-right">
+					<div className="listings-center-right-box">
+						<div className="prev-button">
+							<button className="nav-button" onClick={() => setMyIndex(i => Math.max(i - 1, 0))}>˄</button>
+						</div>
+						<div className="listings-center-center">
+							{myListings.length > 0 && displayListings(myListings[myIndex])}
+						</div>
+						<div className="next-button">
+							<button className="nav-button" onClick={() => setMyIndex(i => Math.min(i + 1, myListings.length - 1))}>˅</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div className="listings-bottom">
+				<button className="function-button" onClick={() => navigate("/add-listings")}>Add a Listing</button>
+				<button className="function-button" onClick={handleLogout}>Logout</button>
+			</div>
 		</div>
-	)
+	);
 }
 
 export default Listings;
