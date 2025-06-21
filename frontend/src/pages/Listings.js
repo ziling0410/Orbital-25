@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
 import SearchBar from "./SearchBar";
 import "./Listings.css";
 
@@ -96,6 +97,24 @@ function Listings() {
 		fetchListings();
 		setSearchInput("");
 	};
+
+	const handleLike = async () => {
+		const response = await fetch("http://localhost:3000/start-trade", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ userId, listingId: otherListings[otherIndex]._id }),
+		});
+
+		const data = await response.json();
+
+		if (response.ok) {
+            navigate(`/trade/${data.trade_id}`);
+		} else {
+			console.error("Error liking listing: ", data.message);
+		}
+	};
 	
 	return (
 		<div className="listings-entire">
@@ -124,8 +143,13 @@ function Listings() {
 						<div className="listings-center-center">
 							{otherListings.length > 0 && displayListings(otherListings[otherIndex])}
 						</div>
-                        <div className="next-button">
-							<button className="nav-button" onClick={() => setOtherIndex(i => Math.min(i + 1, otherListings.length - 1))}>˅</button>
+						<div className="listings-center-left-bottom">
+							<div className="listings-center-left-bottom-nav">
+								<button className="nav-button" onClick={() => setOtherIndex(i => Math.min(i + 1, otherListings.length - 1))}>˅</button>
+							</div>
+							<div className="listings-center-left-bottom-like">
+								<button className="like-button" onClick={handleLike}><FaHeart /></button>
+							</div>
 						</div>
 					</div>
 				</div>
