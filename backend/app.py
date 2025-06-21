@@ -16,6 +16,8 @@ client = MongoClient("mongodb+srv://ziling:GanXie1999@orbital.p2xujzb.mongodb.ne
 db = client["merchmates"] # Creates "merchmates" database
 users = db["users"] # Creates "users" collection within "merchmates" database
 trade_listings = db["trade_listings"]
+ongoing_trades = db["ongoing_trades"]
+notifications = db["notifications"]
 fs = gridfs.GridFS(db)
 
 @app.route("/save-username", methods = ["POST"])
@@ -41,7 +43,6 @@ def save_username():
 def get_username():
     data = request.json
     user_id = data["id"]
-    print(user_id)
 
     user = users.find_one({"id": user_id})
     return jsonify({"username": user["username"]}), 200
@@ -68,12 +69,13 @@ def search_listings():
     }
 
     if user_id:
-        search_filter["id"] = user_id
+        search_filter["user_id"] = user_id
     elif exclude_user_id:
-        search_filter["id"] = {"$ne": exclude_user_id}
+        search_filter["user_id"] = {"$ne": exclude_user_id}
 
-    listings = list(trade_listings.find(search_filter, {"_id": 0}).sort("created_at", DESCENDING))
+    listings = list(trade_listings.find(search_filter).sort("created_at", DESCENDING))
     for listing in listings:
+        listing["_id"] = str(listing["_id"])
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
     return jsonify(listings), 200
@@ -85,12 +87,13 @@ def get_listings():
     query = {}
 
     if user_id:
-        query["id"] = user_id
+        query["user_id"] = user_id
     elif exclude_user_id:
-        query["id"] = {"$ne": exclude_user_id}
+        query["user_id"] = {"$ne": exclude_user_id}
 
-    listings = list(trade_listings.find(query, {"_id": 0}).sort("created_at", DESCENDING))
+    listings = list(trade_listings.find(query).sort("created_at", DESCENDING))
     for listing in listings:
+        listing["_id"] = str(listing["_id"])
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
     return jsonify(listings), 200
@@ -110,8 +113,52 @@ def add_listings():
 
     image_id = fs.put(haveImage, filename = haveImage.filename, content_type = haveImage.content_type)
     
-    trade_listings.insert_one({"have": have, "haveImageId": image_id, "want": want, "preferences": preferences, "id": user["id"], "created_at": datetime.now()})
+    trade_listings.insert_one({"have": have, "haveImageId": image_id, "want": want, "preferences": preferences, "user_id": user["id"], "created_at": datetime.now()})
     return jsonify({"message": "Listing added successfully"}), 201
+
+@app.route("/start-trade", methods = ["POST"])
+def start_trade():
+    data = request.json
+    listing_id = data.get("listingId")
+    user_id = data.get("userId")
+
+    if not listing_id or not user_id:
+        return jsonify({"message": "Missing fields"}), 400
+
+    listing = trade_listings.find_one({"_id": ObjectId(listing_id)})
+
+    if not listing:
+        return jsonify({"message": "Listing not found"}), 404
+
+    user = users.find_one({"id": user_id})
+
+    if not user:
+        return jsonify({"message": "User not found, please login first"}), 401
+
+    result = ongoing_trades.insert_one({"userA_id": user_id, "userB_id": listing["user_id"], "userB_have": listing["have"], "userA_have": listing["want"], "preferences": listing["preferences"], "created_at": datetime.now()})
+    
+    notifications.insert_one({"recipient_id": listing["user_id"], "message": f"{user["username"]} has started a trade with you for {listing["have"]}", "created_at": datetime.now(), "read": False})
+
+    return jsonify({"message": "Trade started successfully", "trade_id": str(result.inserted_id)}), 201
+
+@app.route("/trade/<trade_id>", methods = ["GET"])
+def trade(trade_id):
+    trade = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
+    
+    if not trade:
+        return jsonify({"message": "Trade not found"}), 404
+
+    userA = users.find_one({"id": trade["userA_id"]})
+    userB = users.find_one({"id": trade["userB_id"]})
+
+    if not userA or not userB:
+        return jsonify({"message": "User not found"}), 404
+
+    trade["_id"] = str(trade["_id"])
+    trade["userA"] = {"id": userA["id"], "username": userA["username"]}
+    trade["userB"] = {"id": userB["id"], "username": userB["username"]}
+    
+    return jsonify(trade), 200
 
 if __name__ == "__main__":
     app.run()
