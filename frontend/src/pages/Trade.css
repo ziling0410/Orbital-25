@@ -1,0 +1,84 @@
+.trade-entire {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+.trade-top {
+	flex: 0 0 10%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.trade-top-left {
+	flex: 0 0 10%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+}
+.trade-top-right {
+	flex: 0 0 10%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.trade-center {
+	flex: 0 0 80%;
+	display: flex;
+	flex-direction: row;
+	font-size: 20px;
+}
+.trade-center-left, .trade-center-right {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+.trade-center-left-box, .trade-center-right-box {
+	background-color: #f1ebe5;
+	width: 60%;
+	height: 60%;
+	border-radius: 70px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 100px;
+}
+.trade-bottom {
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	position: relative;
+}
+.trade-bottom-center {
+	margin-bottom: 100px;
+}
+.trade-bottom-right {
+	position: absolute;
+	right: 1rem;
+	margin-bottom: 50px;
+}
+.trade-button {
+	background-color: #f1ebe5;
+	color: black;
+	padding: 15px;
+	text-align: center;
+	font-size: 30px;
+	cursor: pointer;
+	border-radius: 20px;
+}
+.trade-home-button {
+	background-color: #f1ebe5;
+	color: black;
+	padding: 10px;
+	text-align: center;
+	font-size: 15px;
+	cursor: pointer;
+	border-radius: 10px;
+}

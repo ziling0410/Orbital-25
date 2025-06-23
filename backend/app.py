@@ -135,7 +135,7 @@ def start_trade():
     if not user:
         return jsonify({"message": "User not found, please login first"}), 401
 
-    result = ongoing_trades.insert_one({"userA_id": user_id, "userB_id": listing["user_id"], "userB_have": listing["have"], "userA_have": listing["want"], "preferences": listing["preferences"], "created_at": datetime.now()})
+    result = ongoing_trades.insert_one({"userA_id": user_id, "userB_id": listing["user_id"], "userB_have": listing["have"], "userA_have": listing["want"], "userA_status": "Agreed", "userB_status": "Pending", "preferences": listing["preferences"], "created_at": datetime.now()})
     
     notifications.insert_one({"recipient_id": listing["user_id"], "message": f"{user["username"]} has started a trade with you for {listing["have"]}", "created_at": datetime.now(), "read": False})
 
@@ -159,6 +159,43 @@ def trade(trade_id):
     trade["userB"] = {"id": userB["id"], "username": userB["username"]}
     
     return jsonify(trade), 200
+
+@app.route("/update-trade-status", methods = ["POST"])
+def update_trade_status():
+    data = request.json
+    trade_id = data.get("tradeId")
+    user_id = data.get("user_id")
+    status = data.get("status")
+
+    if not trade_id or not user_id or not status:
+        return jsonify({"message": "Missing fields"}), 400
+
+    trade = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
+
+    if not trade:
+        return jsonify({"message": "Trade not found"}), 404
+
+    if trade["userA_id"] != user_id and trade["userB_id"] != user_id:
+        return jsonify({"message": "User not part of this trade"}), 403
+
+    if trade["userA_id"] == user_id:
+        ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userA_status": status}})
+    else:
+        ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userB_status": status}})
+
+    return jsonify({"message": "Trade status updated successfully"}), 200
+
+@app.route("/delete-trade", methods = ["POST"])
+def delete_trade():
+    data = request.json
+    trade_id = data.get("tradeId")
+
+    result = ongoing_trades.delete_one({"_id": ObjectId(trade_id)})
+
+    if result.deleted_count == 0:
+        return jsonify({"message": "Trade not found"}), 404
+    else:
+        return jsonify({"message": "Trade deleted successfully"}), 200
 
 if __name__ == "__main__":
     app.run()
