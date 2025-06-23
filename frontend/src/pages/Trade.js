@@ -1,12 +1,15 @@
-import { useParams } from "react-router-dom";
+
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../App";
 import React, { useEffect, useState } from "react";
+import "./Trade.css";
 
 function Trade() {
 	const { tradeId } = useParams();
 	const [trade, setTrade] = useState(null);
 	const [userId, setUserId] = useState(null);
 	const [username, setUsername] = useState("");
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const getUser = async () => {
@@ -45,47 +48,144 @@ function Trade() {
 		}
 	}, [userId]);
 
-	useEffect(() => {
-		if (!userId || !tradeId) return;
+	const handleHomeClick = () => {
+		navigate("/");
+	};
 
-		const fetchTrade = async () => {
-			try {
-				const response = await fetch(`http://localhost:3000/trade/${tradeId}`);
-				if (response.ok) {
-					const data = await response.json();
-					setTrade(data);
-				} else {
-					console.log("Failed to fetch trade");
-				}
-			} catch (error) {
-				console.log("Error fetching trade: ", error);
+	const fetchTrade = async () => {
+		try {
+			const response = await fetch(`http://localhost:3000/trade/${tradeId}`);
+			if (response.ok) {
+				const data = await response.json();
+				setTrade(data);
+			} else {
+				console.log("Failed to fetch trade");
 			}
-		};
+		} catch (error) {
+			console.log("Error fetching trade: ", error);
+		}
+	};
 
-		fetchTrade();
+	useEffect(() => {
+		if (userId && tradeId) {
+			fetchTrade();
+		}
 	}, [userId, tradeId]);
+
+	const updateStatus = async (user_id, status) => {
+		try {
+			const response = await fetch("http://localhost:3000/update-trade-status", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ tradeId, user_id, status }),
+			});
+			if (response.ok) {
+				const data = await response.json();
+				fetchTrade();
+			} else {
+				console.log("Failed to update trade status");
+			}
+		} catch (error) {
+			console.log("Error updating trade status: ", error);
+		}
+	};
+
+	const rejectTrade = async () => {
+		try {
+			const response = await fetch("http://localhost:3000/reject-trade", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ tradeId }),
+			});
+			if (response.ok) {
+				navigate("/get-listings");
+			} else {
+				console.log("Failed to delete trade");
+			}
+		} catch (error) {
+			console.log("Error deleting trade: ", error);
+		}
+	};
 
 	if (!userId || !trade) {
 		return null;
 	}
 
 	return (
-		<div>
-			{userId === trade["userA_id"] ? (
-				<div>
-					<p>Your Item: {trade["userA_have"]}</p>
-					<p>Their Item: {trade["userB_have"]}</p>
+		<div className="trade-entire">
+			<div className="trade-top">
+				<div className="trade-top-left" onClick={handleHomeClick}>
+					<h1 className="home-brand">MERCHMATES</h1>
 				</div>
-			) : userId === trade["userB_id"] ? (
-				<div>
-					<p>Your Item: {trade["userB_have"]}</p>
-					<p>Their Item: {trade["userA_have"]}</p>
+				<div className="trade-top-right">
+					<p>{username}</p>
 				</div>
-			) : (
-				<p>You are not part of this trade.</p>
-			)}
-		</div>		
-    );
+			</div>
+			<div className="trade-center">
+				<div className="trade-center-left">
+					<div className="trade-center-left-box">
+						{userId === trade["userA_id"] ? (
+							<div>
+								<p><strong>Your Item - </strong>{trade["userA_have"]}</p>
+								<br />
+								<p><strong>Your Status - </strong>{trade["userA_status"]}</p>
+							</div>
+						) : userId === trade["userB_id"] ? (
+							<div>
+								<p><strong>Your Item - </strong>{trade["userB_have"]}</p>
+								<br />
+								<p><strong>Your Status - </strong>{trade["userB_status"]}</p>
+							</div>
+						) : null}
+					</div>
+				</div>
+				<div className="trade-center-right">
+					<div className="trade-center-right-box">
+						{userId === trade["userA_id"] ? (
+							<div>
+								<p><strong>Their Item - </strong>{trade["userB_have"]}</p>
+								<br />
+								<p><strong>Their Status - </strong>{trade["userB_status"]}</p>
+							</div>
+						) : userId === trade["userB_id"] ? (
+							<div>
+								<p><strong>Their Item - </strong>{trade["userA_have"]}</p>
+								<br />
+								<p><strong>Their Status - </strong>{trade["userA_status"]}</p>
+							</div>
+						) : null}
+					</div>
+				</div>
+			</div>
+			<div className="trade-bottom">
+				<div className="trade-bottom-center">
+					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Pending" && (
+						<div>
+							<button className="trade-button" onClick={() => updateStatus(userId, "Agreed")}>Accept Trade</button>
+							<button className="trade-button" onClick={rejectTrade}>Reject Trade</button>
+						</div>
+					)}
+					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Agreed" && (
+						<div>
+							<button className="trade-button" onClick={() => updateStatus(userId, "Shipped")}>Confirm Shipping</button>
+						</div>
+					)}
+					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Shipped" && (
+						<div>
+							<button className="trade-button" onClick={() => updateStatus(userId, "Completed")}>Confirm Received</button>
+						</div>
+                    )}
+				</div>
+				<div className="trade-bottom-right">
+					<button className="trade-home-button" onClick={() => navigate("/get-listings")}>Back to Listings</button>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default Trade;
