@@ -19,6 +19,7 @@ function Listings() {
 		const getUser = async () => {
 			const { data: { user } } = await supabase.auth.getUser();
 			if (user) {
+				console.log("UID during username fetch: ", user.id);
 				setUserId(user.id);
 			}
 		};

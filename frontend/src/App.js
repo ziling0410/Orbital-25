@@ -1,6 +1,8 @@
-import "./App.css";
+﻿import "./App.css";
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -8,6 +10,7 @@ import Listings from "./pages/Listings";
 import AddListings from "./pages/AddListings";
 import Profile from "./pages/Profile";
 import Trade from "./pages/Trade";
+import NotificationPollerWrapper from "./pages/NotificationPollerWrapper";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
@@ -17,25 +20,47 @@ export const supabase = createClient(
 
 function App() {
 	const [session, setSession] = useState(null);
+	const [userId, setUserId] = useState(null);
 	
 	useEffect(() => {
-		supabase.auth.getSession()
-			.then(({ data: { session } }) => {
-				setSession(session);
-			});
-		
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((_event, session) => {
+			console.log("Auth state changed, session:", session);
 			setSession(session);
 		});
-		
 		return () => subscription.unsubscribe();
 	}, []);
-	
+
+
+	useEffect(() => {
+		const getUser = async () => {
+			const { data: { user } } = await supabase.auth.getUser();
+			if (user) {
+				setUserId(user.id);
+			}
+		};
+		getUser();
+	}, []);
+
+	useEffect(() => {
+		const checkSession = async () => {
+			const { data: { user }, error } = await supabase.auth.getUser();
+			if (!user || error) {
+				console.log("No valid Supabase session — signing out.");
+				await supabase.auth.signOut();
+			} else {
+				console.log("Valid session detected on app load:", user.id);
+			}
+		};
+
+		checkSession();
+	}, []);
+		
 	return (
 		<div className = "App">
 			<BrowserRouter>
+				<NotificationPollerWrapper userId={userId} />
 				<Routes>
 					<Route path = "/" element = {<Home />} />
 					<Route path = "/login" element = {session ? <Navigate to = "/" /> : <Login />} />
@@ -46,6 +71,7 @@ function App() {
                     <Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
 				</Routes>
 			</BrowserRouter>
+			<ToastContainer position="top-right" autoClose={5000} />
 		</div>
 	);
 }

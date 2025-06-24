@@ -15,38 +15,61 @@ function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
-		const { data, error } = await supabase.auth.signUp({
+		// Step 1: Register the user
+		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email,
 			password,
 		});
-		
-		if (error) {
-			setMessage("Registration failed: " + error.message);
+
+		if (signUpError) {
+			setMessage("Registration failed: " + signUpError.message);
+			return;
 		}
-		
-		const user = data.user;
-		const formData = new FormData();
-		formData.append("username", username);
-		formData.append("profilePicture", image);
-		formData.append("id", user.id);
-		formData.append("description", description);
-		formData.append("location", location);
-				
-		if (user) {
+
+		console.log("New user ID after signup:", signUpData?.user?.id);
+
+		// Step 2: Log in the user manually (ensure session is created)
+		const { error: signInError } = await supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
+
+		if (signInError) {
+			setMessage("Login after signup failed: " + signInError.message);
+			return;
+		}
+
+		// Step 3: Get the user ID from current session
+		const { data: userData } = await supabase.auth.getUser();
+		const user = userData?.user;
+		console.log("UUID after login: ", user?.id);
+
+		// Step 4: Send data to backend
+		if (user && user.id) {
+			const formData = new FormData();
+			formData.append("username", username);
+			formData.append("profilePicture", image);
+			formData.append("id", user.id);
+			formData.append("description", description);
+			formData.append("location", location);
+
 			const response = await fetch("/save-username", {
 				method: "POST",
 				body: formData,
 			});
-		
+
 			if (response.ok) {
-				setMessage("Registration successful");
-				navigate("/login");
+				setMessage("Registration successful!");
+				window.location.href = "/"; // redirect to homepage
 			} else {
 				const err = await response.text();
-				setMessage("Error: " + err);
+				setMessage("Error saving username: " + err);
 			}
+		} else {
+			setMessage("User ID not found after login.");
 		}
 	};
+
 		
 	return (
 		<div className="register-entire">

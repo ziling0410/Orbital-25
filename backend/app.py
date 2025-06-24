@@ -44,7 +44,10 @@ def get_username():
     data = request.json
     user_id = data["id"]
 
+    print("Searching for user with id:", user_id)
     user = users.find_one({"id": user_id})
+    print("Found user:", user)
+
     return jsonify({"username": user["username"]}), 200
 
 @app.route("/image/<id>", methods = ["GET"])
@@ -137,7 +140,7 @@ def start_trade():
 
     result = ongoing_trades.insert_one({"userA_id": user_id, "userB_id": listing["user_id"], "userB_have": listing["have"], "userA_have": listing["want"], "userA_status": "Agreed", "userB_status": "Pending", "preferences": listing["preferences"], "created_at": datetime.now()})
     
-    notifications.insert_one({"recipient_id": listing["user_id"], "message": f"{user["username"]} has started a trade with you for {listing["have"]}", "created_at": datetime.now(), "read": False})
+    notifications.insert_one({"recipient_id": listing["user_id"], "message": f"{user["username"]} has started a trade with you for {listing["have"]}", "trade_id": str(result.inserted_id), "created_at": datetime.now(), "read": False})
 
     return jsonify({"message": "Trade started successfully", "trade_id": str(result.inserted_id)}), 201
 
@@ -178,10 +181,16 @@ def update_trade_status():
     if trade["userA_id"] != user_id and trade["userB_id"] != user_id:
         return jsonify({"message": "User not part of this trade"}), 403
 
+    sender = users.find_one({"id": user_id})
+
     if trade["userA_id"] == user_id:
         ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userA_status": status}})
+        recipient_id = trade["userB_id"]
     else:
         ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userB_status": status}})
+        recipient_id = trade["userA_id"]
+
+    notifications.insert_one({"recipient_id": recipient_id, "message": f"{sender['username']} updated the trade status to {status}", "trade_id": trade_id, "created_at": datetime.now(), "read": False})
 
     return jsonify({"message": "Trade status updated successfully"}), 200
 
@@ -196,6 +205,36 @@ def delete_trade():
         return jsonify({"message": "Trade not found"}), 404
     else:
         return jsonify({"message": "Trade deleted successfully"}), 200
+
+@app.route("/notifications", methods = ["GET"])
+def get_notifications():
+    user_id = request.args.get("userId")
+
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+
+    notifications_list = list(notifications.find({"recipient_id": user_id, "read": False}).sort("created_at", DESCENDING))
+    
+    for notification in notifications_list:
+        notification["_id"] = str(notification["_id"])
+        notification["created_at"] = notification["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+    
+    return jsonify(notifications_list), 200
+
+@app.route("/mark-notification-read", methods = ["POST"])
+def mark_notification_read():
+    data = request.json
+    notification_id = data.get("notificationId")
+    
+    if not notification_id:
+        return jsonify({"message": "Notification ID is required"}), 400
+    
+    result = notifications.update_one({"_id": ObjectId(notification_id)}, {"$set": {"read": True}})
+    
+    if result.modified_count == 0:
+        return jsonify({"message": "Notification not found or already read"}), 404
+    else:
+        return jsonify({"message": "Notification marked as read"}), 200
 
 if __name__ == "__main__":
     app.run()
