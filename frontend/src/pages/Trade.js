@@ -162,20 +162,23 @@ function Trade() {
 				</div>
 			</div>
 			<div className="trade-bottom">
+				<div className="trade-bottom-left">
+                    <button className="trade-home-button" onClick={fetchTrade}>Refresh Trade</button>
+				</div>
 				<div className="trade-bottom-center">
 					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Pending" && (
-						<div>
+						<div className="trade-buttons">
 							<button className="trade-button" onClick={() => updateStatus(userId, "Agreed")}>Accept Trade</button>
 							<button className="trade-button" onClick={rejectTrade}>Reject Trade</button>
 						</div>
 					)}
 					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Agreed" && (
-						<div>
+						<div className="trade-buttons">
 							<button className="trade-button" onClick={() => updateStatus(userId, "Shipped")}>Confirm Shipping</button>
 						</div>
 					)}
 					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Shipped" && (
-						<div>
+						<div className="trade-buttons">
 							<button className="trade-button" onClick={() => updateStatus(userId, "Completed")}>Confirm Received</button>
 						</div>
                     )}

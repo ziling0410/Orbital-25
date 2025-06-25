@@ -190,7 +190,7 @@ def update_trade_status():
         ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userB_status": status}})
         recipient_id = trade["userA_id"]
 
-    notifications.insert_one({"recipient_id": recipient_id, "message": f"{sender['username']} updated the trade status to {status}", "trade_id": trade_id, "created_at": datetime.now(), "read": False})
+    notifications.insert_one({"recipient_id": recipient_id, "message": f"{sender['username']} updated the trade status to {status}", "trade_id": trade_id, "sender_username": sender["username"], "created_at": datetime.now(), "read": False})
 
     return jsonify({"message": "Trade status updated successfully"}), 200
 
@@ -214,6 +214,21 @@ def get_notifications():
         return jsonify({"message": "User ID is required"}), 400
 
     notifications_list = list(notifications.find({"recipient_id": user_id, "read": False}).sort("created_at", DESCENDING))
+    
+    for notification in notifications_list:
+        notification["_id"] = str(notification["_id"])
+        notification["created_at"] = notification["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+    
+    return jsonify(notifications_list), 200
+
+@app.route("/notifications-history", methods = ["GET"])
+def get_notifications_history():
+    user_id = request.args.get("userId")
+    
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+    
+    notifications_list = list(notifications.find({"recipient_id": user_id}).sort("created_at", DESCENDING))
     
     for notification in notifications_list:
         notification["_id"] = str(notification["_id"])

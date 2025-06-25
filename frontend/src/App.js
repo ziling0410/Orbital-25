@@ -11,6 +11,7 @@ import AddListings from "./pages/AddListings";
 import Profile from "./pages/Profile";
 import Trade from "./pages/Trade";
 import NotificationPollerWrapper from "./pages/NotificationPollerWrapper";
+import Notifications from "./pages/Notifications.js";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
@@ -68,7 +69,8 @@ function App() {
 					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/profile" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
-                    <Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
+					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
+                    <Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />"
 				</Routes>
 			</BrowserRouter>
 			<ToastContainer position="top-right" autoClose={5000} />

@@ -53,6 +53,14 @@ function Home() {
         }
     };
 
+    const handleNotifications = async () => {
+        if (!userId) {
+            navigate("/login");
+        } else {
+            navigate("/notifications");
+        }
+    };
+
     const handleClearSearch = () => {
         setSearchInput("");
     };
@@ -121,6 +129,7 @@ function Home() {
                 <div className="home-bottom-right">
                     <div className="home-bottom-right-box">
                         <button className="trade" onClick={handleTrade}>Trade</button>
+                        <button className="trade" onClick={handleNotifications}>Notifications</button>
                     </div>
                 </div>
             </div>
