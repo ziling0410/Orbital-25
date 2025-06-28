@@ -15,27 +15,34 @@ function Home() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setUserId(user.id);
-                await fetchUserProfile(user.id);
             }
         };
         getUser();
     }, []);
 
-    const fetchUserProfile = async (userId) => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
-
-            if (data) {
-                setUserProfile(data);
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch("/get-profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: userId })
+                });
+                if (response.ok) {
+                    const profileData = await response.json();
+                    setUserProfile(profileData);
+                } else {
+                    console.error("Error loading profile");
+                }
+            } catch (error) {
+                console.error("Network error loading profile:", error);
             }
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
+        };
+
+        if (userId) {
+            fetchProfile();
         }
-    };
+    }, [userId]);
 
     const handleSearch = async () => {
         if (!userId) {
@@ -77,6 +84,10 @@ function Home() {
         navigate("/");
     };
 
+    if (!userProfile) {
+        return null;
+    }
+
     return (
         <div className="home-entire">
             <div className="home-top">
@@ -91,29 +102,9 @@ function Home() {
                         handleClearSearch={handleClearSearch}
                     />
                 </div>
-                <div className="home-top-right">
-                    {userId ? (
-                        <div className="user-info">
-                            <span className="username">
-                                {userProfile?.username || 'User'}
-                            </span>
-                            <div className="profile-container" onClick={handleProfileClick}>
-                                <img 
-                                    src={userProfile?.profile_picture || "/default-profile.png"} 
-                                    alt="Profile" 
-                                    className="profile-picture-small"
-                                    onError={(e) => {
-                                        e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f1ebe5'/%3E%3Ccircle cx='20' cy='16' r='6' fill='%23999'/%3E%3Cpath d='M20 24c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6z' fill='%23999'/%3E%3C/svg%3E";
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="auth-buttons">
-                            <button className="button" onClick={() => navigate("/register")}>Register</button>
-                            <button className="button" onClick={() => navigate("/login")}>Login</button>
-                        </div>
-                    )}
+                <div className="home-top-right" onClick={handleProfileClick}>
+                    <p>{userProfile.username}</p>
+                    <img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
                 </div>
             </div>
             <div className="home-bottom">

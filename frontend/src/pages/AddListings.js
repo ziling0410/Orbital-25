@@ -10,16 +10,14 @@ function AddListings() {
 	const [preferences, setPreferences] = useState("");
 	const [message, setMessage] = useState("");
 	const [userId, setUserId] = useState(null);
-	const [username, setUsername] = useState("");
+	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
 	
 	useEffect(() => {
 		const getUser = async () => {
-			const { data, error } = await supabase.auth.getUser();
-			if (data?.user) {
-				setUserId(data.user.id);
-			} else {
-				setMessage("Error: " + error.message);
+			const { data: { user } } = await supabase.auth.getUser();
+			if (user) {
+				setUserId(user.id);
 			}
 		};
 		getUser();
@@ -53,32 +51,41 @@ function AddListings() {
 		navigate("/");
 	};
 
-	useEffect(() => {
-		const fetchUsername = async () => {
-			try {
-				const response = await fetch("http://localhost:3000/get-username", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ id: userId }),
-				});
+	const handleProfileClick = () => {
+		if (!userId) {
+			navigate("/login");
+		} else {
+			navigate("/profile");
+		}
+	};
 
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const response = await fetch("/get-profile", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
+				});
 				if (response.ok) {
-					const data = await response.json();
-					setUsername(data.username);
+					const profileData = await response.json();
+					setUserProfile(profileData);
 				} else {
-					console.log("Failed to fetch username");
+					console.error("Error loading profile");
 				}
 			} catch (error) {
-				console.log("Error fetching username: ", error);
+				console.error("Network error loading profile:", error);
 			}
 		};
 
 		if (userId) {
-			fetchUsername();
+			fetchProfile();
 		}
 	}, [userId]);
+
+	if (!userProfile) {
+		return null;
+	}
 	
 	return (
 		<div className="addlistings-entire">
@@ -86,8 +93,9 @@ function AddListings() {
 				<div className="addlistings-top-left">
 					<h1>Add a Listing</h1>
 				</div>
-				<div className="addlistings-top-right">
-					<p>{username}</p>
+				<div className="addlistings-top-right" onClick={handleProfileClick}>
+					<p>{userProfile.username}</p>
+					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<input

@@ -30,9 +30,11 @@
 .listings-top-right {
 	flex: 1;
 	display: flex;
-	justify-content: flex-start;
+	justify-content: center;
 	align-items: center;
 	font-size: 25px;
+	gap: 20px;
+	cursor: pointer;
 }
 .listings-center {
 	flex: 0 0 80%;

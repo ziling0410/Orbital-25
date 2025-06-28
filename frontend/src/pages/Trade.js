@@ -7,7 +7,7 @@ function Trade() {
 	const { tradeId } = useParams();
 	const [trade, setTrade] = useState(null);
 	const [userId, setUserId] = useState(null);
-	const [username, setUsername] = useState("");
+	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -21,29 +21,26 @@ function Trade() {
 	}, []);
 
 	useEffect(() => {
-		const fetchUsername = async () => {
+		const fetchProfile = async () => {
 			try {
-				const response = await fetch("http://localhost:3000/get-username", {
+				const response = await fetch("/get-profile", {
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ id: userId }),
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
 				});
-
 				if (response.ok) {
-					const data = await response.json();
-					setUsername(data.username);
+					const profileData = await response.json();
+					setUserProfile(profileData);
 				} else {
-					console.log("Failed to fetch username");
+					console.error("Error loading profile");
 				}
 			} catch (error) {
-				console.log("Error fetching username: ", error);
+				console.error("Network error loading profile:", error);
 			}
 		};
 
 		if (userId) {
-			fetchUsername();
+			fetchProfile();
 		}
 	}, [userId]);
 
@@ -110,7 +107,7 @@ function Trade() {
 		}
 	};
 
-	if (!userId || !trade) {
+	if (!userProfile || !trade) {
 		return null;
 	}
 
@@ -121,7 +118,8 @@ function Trade() {
 					<h1 className="home-brand">MERCHMATES</h1>
 				</div>
 				<div className="trade-top-right">
-					<p>{username}</p>
+					<p>{userProfile.username}</p>
+					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<div className="trade-center">

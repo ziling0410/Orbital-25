@@ -58,15 +58,6 @@ def get_profile():
 
     return jsonify(user), 200
 
-@app.route("/get-username", methods = ["POST"])
-def get_username():
-    data = request.json
-    user_id = data["id"]
-
-    user = users.find_one({"id": user_id})
-
-    return jsonify({"username": user["username"]}), 200
-
 @app.route("/image/<id>", methods = ["GET"])
 def get_image(id):
     image = fs.get(ObjectId(id))

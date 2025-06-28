@@ -57,7 +57,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    font-size: 25px;
+    gap: 20px;
+    cursor: pointer;
 }
 .home-bottom {
     flex: 1;
