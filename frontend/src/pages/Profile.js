@@ -1,255 +1,132 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../App";
+import { CiMapPin } from "react-icons/ci";
 import "./Profile.css";
 
 function Profile() {
-	const [activeTab, setActiveTab] = useState("reviews");
-	const [isFollowing, setIsFollowing] = useState(false);
-	const [showReviewModal, setShowReviewModal] = useState(false);
-	const [reviewRating, setReviewRating] = useState(0);
-	const [reviewText, setReviewText] = useState("");
-	const [message, setMessage] = useState("");
-	const [searchQuery, setSearchQuery] = useState("");
+	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
-
-	const [reviews, setReviews] = useState([
-		{ id: 1, rating: 5, reviewer: "John", location: "NYC", date: "2025-05-20", text: "Nice and friendly trader!" },
-		{ id: 2, rating: 4, reviewer: "Jane", location: "LA", date: "2025-05-18", text: "Thank you for the trade." }
-	]);
-
+    const [myListings, setMyListings] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		checkUser();
+		const getUser = async () => {
+			const { data: { user } } = await supabase.auth.getUser();
+			if (user) {
+				console.log("UID during username fetch: ", user.id);
+				setUserId(user.id);
+			}
+		};
+		getUser();
 	}, []);
 
-	const checkUser = async () => {
-		const { data: { user }, error } = await supabase.auth.getUser();
-		if (!user) {
-			navigate("/login");
-		} else {
-			fetchProfile(user.id);
-		}
-	};
-
-	const fetchProfile = async (userId) => {
-		const { data, error } = await supabase
-			.from("profiles")
-			.select("*")
-			.eq("id", userId)
-			.single();
-
-		if (error) {
-			console.error("Error loading profile:", error.message);
-		} else {
-			setUserProfile(data);
-		}
-	};
-
-	const handleFollow = () => {
-		setIsFollowing(!isFollowing);
-		setMessage(isFollowing ? "Unfollowed Zi Ling" : "Now following Zi Ling!");
-		setTimeout(() => setMessage(""), 3000);
-	};
-
-	const handleStarClick = (rating) => {
-		setReviewRating(rating);
-	};
-
-	const handleReviewSubmit = () => {
-		if (reviewRating === 0 || reviewText.trim() === "") {
-			setMessage("Please provide a rating and review.");
-			setTimeout(() => setMessage(""), 3000);
-			return;
-		}
-
-		const newReview = {
-			id: reviews.length + 1,
-			rating: reviewRating,
-			reviewer: "You",
-			location: "Singapore",
-			date: new Date().toISOString().split("T")[0],
-			text: reviewText
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const response = await fetch("/get-profile", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
+				});
+				if (response.ok) {
+					const profileData = await response.json();
+					setUserProfile(profileData);
+				} else {
+					console.error("Error loading profile");
+				}
+			} catch (error) {
+				console.error("Network error loading profile:", error);
+			}
 		};
 
-		setReviews([newReview, ...reviews]);
-		setShowReviewModal(false);
-		setReviewText("");
-		setReviewRating(0);
-		setMessage("Review submitted successfully!");
-		setTimeout(() => setMessage(""), 3000);
-	};
-
-	const handleSearch = (e) => {
-		if (e.key === "Enter" && searchQuery.trim()) {
-			setMessage(`Searching for: ${searchQuery}`);
-			setTimeout(() => setMessage(""), 3000);
+		if (userId) {
+			fetchProfile();
 		}
-	};
+	}, [userId]);
 
-	const handleMenuToggle = () => {
-		setMessage("Menu clicked!");
-		setTimeout(() => setMessage(""), 2000);
-	};
+	useEffect(() => {
+		const fetchListing = async () => {
+			try {
+				const response = await fetch(`http://localhost:3000/get-listings?id=${userId}`);
+				if (response.ok) {
+					const listingsData = await response.json();
+					setMyListings(listingsData);
+				} else {
+					console.error("Error loading listings");
+				}
+			} catch (error) {
+				console.error("Network error loading listings:", error);
+			}
+		};
 
-	const renderStars = (rating, interactive = false, onClick = null) => {
-		return Array.from({ length: 5 }, (_, index) => (
-			<span
-				key={index}
-				className={`star ${index < rating ? "filled" : ""} ${interactive ? "interactive" : ""}`}
-				onClick={interactive ? () => onClick(index + 1) : undefined}
-			>
-				★
-			</span>
-		));
-	};
-
-	const renderTabContent = () => {
-		switch (activeTab) {
-			case "reviews":
-				return (
-					<div className="reviews-container">
-						{reviews.map((review) => (
-							<div key={review.id} className="review-card">
-								<div className="review-header">
-									<div className="review-stars">{renderStars(review.rating)}</div>
-									<div className="review-meta">
-										{review.reviewer} | {review.location} | {review.date}
-									</div>
-								</div>
-								<p className="review-text">"{review.text}"</p>
-							</div>
-						))}
-					</div>
-				);
-			case "about":
-				return (
-					<div className="about-content">
-						<h3>About {userProfile?.username || "User"}</h3>
-						<p>{userProfile?.about_text || "No bio provided yet."}</p>
-
-						<h4>Trading Preferences:</h4>
-						<ul>
-							{userProfile?.preferences?.length
-								? userProfile.preferences.map((pref, i) => <li key={i}>{pref}</li>)
-								: <li>No preferences listed.</li>}
-						</ul>
-
-						<h4>Collection Highlights:</h4>
-						<ul>
-							{userProfile?.highlights?.length
-								? userProfile.highlights.map((item, i) => <li key={i}>{item}</li>)
-								: <li>No highlights yet.</li>}
-						</ul>
-					</div>
-				);
-			case "listings":
-				return (
-					<div className="listings-content">
-						<h3>Current Listings</h3>
-						<div className="listing-grid">
-							{/* Example static card - Replace with dynamic MongoDB data if needed */}
-							<div className="listing-card">
-								<img src="http://localhost:3000/uploads/seventeen.jpg" alt="Listing" width="150" />
-								<h4>Seventeen - God of Music</h4>
-								<p>Photocard Set</p>
-								<span className="price">$25</span>
-							</div>
-						</div>
-					</div>
-				);
-			default:
-				return null;
+		if (userId) {
+            fetchListing();
 		}
+	}, [userId]);
+
+	const displayListings = (listing) => {
+		return (
+			<div className="listings-card">
+				<h3>wtt - {listing.have}</h3>
+				<img src={`http://localhost:3000${listing.image_url}`} alt="Item" />
+				<h3>want - {listing.want}</h3>
+			</div>
+		)
 	};
+
+	const handleHomeClick = () => {
+		navigate("/");
+	};
+
+	const handleLogout = async () => {
+		await supabase.auth.signOut();
+		navigate("/");
+	};
+
+	if (!userProfile) {
+		return <div>Loading profile...</div>;
+	}
 
 	return (
-		<div className="profile-container">
-			<header className="header">
-				<div className="hamburger-menu" onClick={handleMenuToggle}>
-					<span></span><span></span><span></span>
+		<div className="profile-entire">
+			<div className="profile-top">
+				<div className="profile-top-left" onClick={handleHomeClick}>
+					<h1 className="home-brand">MERCHMATES</h1>
 				</div>
-				<div className="search-container">
-					<input
-						type="text"
-						className="search-bar"
-						placeholder="Search..."
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						onKeyPress={handleSearch}
-					/>
-					<button className="mic-button">🎤</button>
+				<div className="profile-top-right">
+					<p>{userProfile.username}</p>
+					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
-				<div className="user-info">
-					<div className="chat-icon">💬</div>
-					<span className="username">{userProfile?.username || "Zi Ling"}</span>
-					<img 
-						src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" 
-						alt="Profile" 
-						className="header-avatar" 
-					/>
-				</div>
-			</header>
-
-			<main className="profile-main">
-				<div className="profile-header">
-					<img 
-						src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" 
-						alt="Zi Ling" 
-						className="profile-avatar" 
-					/>
-					<div className="profile-info">
-						<h1 className="profile-name">{userProfile?.username || "Zi Ling"}</h1>
-						<p className="profile-bio">{userProfile?.about_text || "K-pop collector and card trader."}</p>
-						<div className="location">📍 Singapore</div>
-						<div className="rating-section">
-							<span className="rating-label">Average Rating:</span>
-							<div className="stars">{renderStars(4)}</div>
-							<span className="rating-score">4.2 (120 reviews)</span>
-						</div>
-						<div className="action-buttons">
-							<button className="write-review-btn" onClick={() => setShowReviewModal(true)}>Write a Review</button>
-							<button className={`follow-btn ${isFollowing ? "following" : ""}`} onClick={handleFollow}>
-								{isFollowing ? "Following" : "Follow"}
-							</button>
+			</div>
+			<div className="profile-center">
+				<div className="profile-center-top">
+					<div className="profile-center-top-left">
+						<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-img" />
+					</div>
+					<div className="profile-center-top-right">
+						<p>{userProfile.username}</p>
+						<p>{userProfile.description}</p>
+						<div className="profile-location">
+							<CiMapPin />
+							<p>{userProfile.location}</p>
 						</div>
 					</div>
 				</div>
-
-				<nav className="profile-nav">
-					<button className={`nav-tab ${activeTab === "reviews" ? "active" : ""}`} onClick={() => setActiveTab("reviews")}>Reviews</button>
-					<button className={`nav-tab ${activeTab === "about" ? "active" : ""}`} onClick={() => setActiveTab("about")}>About</button>
-					<button className={`nav-tab ${activeTab === "listings" ? "active" : ""}`} onClick={() => setActiveTab("listings")}>Listings</button>
-				</nav>
-
-				<div className="tab-content">{renderTabContent()}</div>
-				{message && <p className="message">{message}</p>}
-
-				<button className="button" onClick={() => navigate("/get-listings")}>Back to Listings</button>
-			</main>
-
-			{showReviewModal && (
-				<div className="modal">
-					<div className="modal-content">
-						<span className="close" onClick={() => setShowReviewModal(false)}>&times;</span>
-						<h2>Write a Review</h2>
-						<div className="rating-input">
-							<label>Rating:</label>
-							<div className="star-rating">{renderStars(reviewRating, true, handleStarClick)}</div>
+				<div className="profile-center-bottom">
+					<p>Available for Trade:</p>
+					<div className="profile-center-bottom-box">
+						<div className="profile-center-bottom-box-item">
+							{myListings[0] ? displayListings(myListings[0]) : <p>No listings found.</p>}
 						</div>
-						<textarea
-							placeholder="Write your review..."
-							value={reviewText}
-							onChange={(e) => setReviewText(e.target.value)}
-							required
-						/>
-						<button type="button" onClick={handleReviewSubmit} className="submit-review-btn">
-							Submit Review
-						</button>
 					</div>
 				</div>
-			)}
+			</div>
+			<div className="profile-bottom">
+				<div className="profile-bottom-right">
+					<button className="function-button" onClick={handleLogout}>Logout</button>
+				</div>
+			</div>
 		</div>
 	);
 }
