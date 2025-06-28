@@ -18,6 +18,7 @@ users = db["users"] # Creates "users" collection within "merchmates" database
 trade_listings = db["trade_listings"]
 ongoing_trades = db["ongoing_trades"]
 notifications = db["notifications"]
+completed_trades = db["completed_trades"]
 fs = gridfs.GridFS(db)
 
 @app.route("/save-username", methods = ["POST"])
@@ -36,17 +37,33 @@ def save_username():
         return jsonify({"message": "Username already exists"}), 409 # Return message & 409 Conflict error
 
     image_id = fs.put(profilePic, filename = profilePic.filename, content_type = profilePic.content_type)
-    users.insert_one({"id": user_id, "username": username, "profilePictureId": image_id, "description": description, "location": location})
+    users.insert_one({
+        "id": user_id, 
+        "username": username, 
+        "profilePictureId": image_id, 
+        "description": description, 
+        "location": location})
     return jsonify({"message": "User registered succesfully"}), 201 # Return message & 201 Created response
+
+@app.route("/get-profile", methods = ["POST"])
+def get_profile():
+    data = request.json
+    user_id = data["id"]
+
+    user = users.find_one({"id": user_id})
+
+    user["_id"] = str(user["_id"])
+    user["image_url"] = f'/image/{str(user["profilePictureId"])}'
+    user["profilePictureId"] = str(user["profilePictureId"])
+
+    return jsonify(user), 200
 
 @app.route("/get-username", methods = ["POST"])
 def get_username():
     data = request.json
     user_id = data["id"]
 
-    print("Searching for user with id:", user_id)
     user = users.find_one({"id": user_id})
-    print("Found user:", user)
 
     return jsonify({"username": user["username"]}), 200
 
@@ -116,7 +133,14 @@ def add_listings():
 
     image_id = fs.put(haveImage, filename = haveImage.filename, content_type = haveImage.content_type)
     
-    trade_listings.insert_one({"have": have, "haveImageId": image_id, "want": want, "preferences": preferences, "user_id": user["id"], "created_at": datetime.now()})
+    trade_listings.insert_one({
+        "have": have, 
+        "haveImageId": image_id, 
+        "want": want, 
+        "preferences": preferences, 
+        "user_id": user["id"], 
+        "created_at": datetime.now()})
+
     return jsonify({"message": "Listing added successfully"}), 201
 
 @app.route("/start-trade", methods = ["POST"])
@@ -138,16 +162,36 @@ def start_trade():
     if not user:
         return jsonify({"message": "User not found, please login first"}), 401
 
-    result = ongoing_trades.insert_one({"userA_id": user_id, "userB_id": listing["user_id"], "userB_have": listing["have"], "userA_have": listing["want"], "userA_status": "Agreed", "userB_status": "Pending", "preferences": listing["preferences"], "created_at": datetime.now()})
+    result = ongoing_trades.insert_one({
+        "userA_id": user_id, 
+        "userB_id": listing["user_id"], 
+        "userB_have": listing["have"], 
+        "userA_have": listing["want"], 
+        "userA_status": "Agreed", 
+        "userB_status": "Pending", 
+        "preferences": listing["preferences"], 
+        "haveImageId": listing["haveImageId"], 
+        "created_at": datetime.now()})
     
-    notifications.insert_one({"recipient_id": listing["user_id"], "message": f"{user["username"]} has started a trade with you for {listing["have"]}", "trade_id": str(result.inserted_id), "created_at": datetime.now(), "read": False})
+    notifications.insert_one({
+        "recipient_id": listing["user_id"], 
+        "message": f"{user["username"]} has started a trade with you for {listing["have"]}", 
+        "trade_id": str(result.inserted_id), 
+        "sender_username": user["username"],
+        "created_at": datetime.now(), 
+        "read": False})
 
+    trade_listings.delete_one({"_id": ObjectId(listing_id)})
+    
     return jsonify({"message": "Trade started successfully", "trade_id": str(result.inserted_id)}), 201
 
 @app.route("/trade/<trade_id>", methods = ["GET"])
 def trade(trade_id):
     trade = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
     
+    if not trade:
+        trade = completed_trades.find_one({"_id": ObjectId(trade_id)})
+
     if not trade:
         return jsonify({"message": "Trade not found"}), 404
 
@@ -160,6 +204,7 @@ def trade(trade_id):
     trade["_id"] = str(trade["_id"])
     trade["userA"] = {"id": userA["id"], "username": userA["username"]}
     trade["userB"] = {"id": userB["id"], "username": userB["username"]}
+    trade["haveImageId"] = str(trade["haveImageId"])
     
     return jsonify(trade), 200
 
@@ -190,15 +235,42 @@ def update_trade_status():
         ongoing_trades.update_one({"_id": ObjectId(trade_id)}, {"$set": {"userB_status": status}})
         recipient_id = trade["userA_id"]
 
-    notifications.insert_one({"recipient_id": recipient_id, "message": f"{sender['username']} updated the trade status to {status}", "trade_id": trade_id, "sender_username": sender["username"], "created_at": datetime.now(), "read": False})
+    notifications.insert_one({
+        "recipient_id": recipient_id, 
+        "message": f"{sender['username']} updated the trade status to {status}", 
+        "trade_id": trade_id, 
+        "sender_username": sender["username"], 
+        "created_at": datetime.now(), 
+        "read": False})
+    
+    updated_trade = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
 
+    if trade["userA_id"] == user_id and status == "Completed":
+        if updated_trade["userB_status"] == "Completed":
+            completed_trades.insert_one(updated_trade)
+            ongoing_trades.delete_one({"_id": ObjectId(trade_id)})
+    elif trade["userB_id"] == user_id and status == "Completed":
+        if updated_trade["userA_status"] == "Completed":
+            completed_trades.insert_one(updated_trade)
+            ongoing_trades.delete_one({"_id": ObjectId(trade_id)})
+    
     return jsonify({"message": "Trade status updated successfully"}), 200
 
-@app.route("/delete-trade", methods = ["POST"])
-def delete_trade():
+@app.route("/reject-trade", methods = ["POST"])
+def reject_trade():
     data = request.json
     trade_id = data.get("tradeId")
 
+    to_delete = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
+
+    trade_listings.insert_one({
+        "have": to_delete["userB_have"], 
+        "haveImageId": to_delete["haveImageId"],
+        "want": to_delete["userA_have"], 
+        "preferences": to_delete["preferences"], 
+        "user_id": to_delete["userB_id"], 
+        "created_at": datetime.now()})
+    
     result = ongoing_trades.delete_one({"_id": ObjectId(trade_id)})
 
     if result.deleted_count == 0:
