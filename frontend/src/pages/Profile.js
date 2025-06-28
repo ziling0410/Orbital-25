@@ -14,7 +14,6 @@ function Profile() {
 		const getUser = async () => {
 			const { data: { user } } = await supabase.auth.getUser();
 			if (user) {
-				console.log("UID during username fetch: ", user.id);
 				setUserId(user.id);
 			}
 		};
@@ -85,7 +84,7 @@ function Profile() {
 	};
 
 	if (!userProfile) {
-		return <div>Loading profile...</div>;
+		return null;
 	}
 
 	return (

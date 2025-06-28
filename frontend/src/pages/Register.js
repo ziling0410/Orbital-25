@@ -15,7 +15,6 @@ function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
-		// Step 1: Register the user
 		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email,
 			password,
@@ -26,9 +25,6 @@ function Register() {
 			return;
 		}
 
-		console.log("New user ID after signup:", signUpData?.user?.id);
-
-		// Step 2: Log in the user manually (ensure session is created)
 		const { error: signInError } = await supabase.auth.signInWithPassword({
 			email,
 			password,
@@ -39,12 +35,9 @@ function Register() {
 			return;
 		}
 
-		// Step 3: Get the user ID from current session
 		const { data: userData } = await supabase.auth.getUser();
 		const user = userData?.user;
-		console.log("UUID after login: ", user?.id);
 
-		// Step 4: Send data to backend
 		if (user && user.id) {
 			const formData = new FormData();
 			formData.append("username", username);
@@ -60,7 +53,7 @@ function Register() {
 
 			if (response.ok) {
 				setMessage("Registration successful!");
-				window.location.href = "/"; // redirect to homepage
+				navigate("/");
 			} else {
 				const err = await response.text();
 				setMessage("Error saving username: " + err);

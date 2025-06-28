@@ -7,7 +7,7 @@ function Notifications() {
     const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
 	const [userId, setUserId] = useState(null);
-	const [username, setUsername] = useState("");
+	const [userProfile, setUserProfile] = useState(null);
 
 	useEffect(() => {
 		const getUser = async () => {
@@ -20,29 +20,26 @@ function Notifications() {
 	}, []);
 
 	useEffect(() => {
-		const fetchUsername = async () => {
+		const fetchProfile = async () => {
 			try {
-				const response = await fetch("http://localhost:3000/get-username", {
+				const response = await fetch("/get-profile", {
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ id: userId }),
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
 				});
-
 				if (response.ok) {
-					const data = await response.json();
-					setUsername(data.username);
+					const profileData = await response.json();
+					setUserProfile(profileData);
 				} else {
-					console.log("Failed to fetch username");
+					console.error("Error loading profile");
 				}
 			} catch (error) {
-				console.log("Error fetching username: ", error);
+				console.error("Network error loading profile:", error);
 			}
 		};
 
 		if (userId) {
-			fetchUsername();
+			fetchProfile();
 		}
 	}, [userId]);
 
@@ -65,14 +62,27 @@ function Notifications() {
 		navigate("/");
 	};
 
+	const handleProfileClick = () => {
+		if (!userId) {
+			navigate("/login");
+		} else {
+			navigate("/profile");
+		}
+	};
+
+	if (!userProfile) {
+		return null;
+	}
+
     return (
 		<div className="notifications-entire">
 			<div className="notifications-top">
 				<div className="notifications-top-left" onClick={handleHomeClick}>
 					<h1 className="home-brand">MERCHMATES</h1>
 				</div>
-				<div className="notifications-top-right">
-					<p>{username}</p>
+				<div className="notifications-top-right" onClick={handleProfileClick}>
+					<p>{userProfile.username}</p>
+					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<div className="notifications-content">

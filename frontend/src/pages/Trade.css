@@ -18,11 +18,13 @@
 	cursor: pointer;
 }
 .trade-top-right {
-	flex: 0 0 10%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 25px;
+    flex: 0 0 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    gap: 20px;
+    cursor: pointer;
 }
 .trade-center {
 	flex: 0 0 80%;

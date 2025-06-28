@@ -7,7 +7,7 @@ import "./Listings.css";
 
 function Listings() {
 	const [userId, setUserId] = useState(null);
-	const [username, setUsername] = useState("");
+	const [userProfile, setUserProfile] = useState(null);
 	const [myListings, setMyListings] = useState([]);
 	const [otherListings, setOtherListings] = useState([]);
 	const [myIndex, setMyIndex] = useState(0);
@@ -19,7 +19,6 @@ function Listings() {
 		const getUser = async () => {
 			const { data: { user } } = await supabase.auth.getUser();
 			if (user) {
-				console.log("UID during username fetch: ", user.id);
 				setUserId(user.id);
 			}
 		};
@@ -27,29 +26,26 @@ function Listings() {
 	}, []);
 
 	useEffect(() => {
-		const fetchUsername = async () => {
+		const fetchProfile = async () => {
 			try {
-				const response = await fetch("http://localhost:3000/get-username", {
+				const response = await fetch("/get-profile", {
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ id: userId }),
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
 				});
-
 				if (response.ok) {
-					const data = await response.json();
-					setUsername(data.username);
+					const profileData = await response.json();
+					setUserProfile(profileData);
 				} else {
-					console.log("Failed to fetch username");
+					console.error("Error loading profile");
 				}
 			} catch (error) {
-				console.log("Error fetching username: ", error);
+				console.error("Network error loading profile:", error);
 			}
 		};
 
 		if (userId) {
-			fetchUsername();
+			fetchProfile();
 		}
 	}, [userId]);
 
@@ -78,6 +74,14 @@ function Listings() {
 	
 	const handleHomeClick = () => {
 		navigate("/");
+	};
+
+	const handleProfileClick = () => {
+		if (!userId) {
+			navigate("/login");
+		} else {
+			navigate("/profile");
+		}
 	};
 
 	const handleLogout = async () => {
@@ -116,6 +120,10 @@ function Listings() {
 			console.error("Error liking listing: ", data.message);
 		}
 	};
+
+	if (!userProfile) {
+		return null;
+    }
 	
 	return (
 		<div className="listings-entire">
@@ -131,8 +139,9 @@ function Listings() {
 						handleClearSearch={handleClearSearch}
 					/>
 				</div>
-				<div className="listings-top-right">
-					<p>{username}</p>
+				<div className="listings-top-right" onClick={handleProfileClick}>
+					<p>{userProfile.username}</p>
+					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<div className="listings-center">
