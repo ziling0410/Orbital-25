@@ -29,33 +29,18 @@ function App() {
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			console.log("Auth state changed, session:", session);
 			setSession(session);
+			setUserId(session?.user?.id ?? null);
 		});
+
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setSession(session);
+			setUserId(session?.user?.id ?? null);
+			if (session) {
+				console.log("Valid session on app load:", session.user.id);
+			}
+		});
+
 		return () => subscription.unsubscribe();
-	}, []);
-
-
-	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
-
-	useEffect(() => {
-		const checkSession = async () => {
-			const { data: { user }, error } = await supabase.auth.getUser();
-			if (!user || error) {
-				console.log("No valid Supabase session — signing out.");
-				await supabase.auth.signOut();
-			} else {
-				console.log("Valid session detected on app load:", user.id);
-			}
-		};
-
-		checkSession();
 	}, []);
 		
 	return (
