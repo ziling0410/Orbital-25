@@ -14,6 +14,12 @@ function useNotificationPoller(userId) {
         const pollNotifications = async () => {
             try {
                 const response = await fetch(`/notifications?userId=${userId}`);
+
+                if (!response.ok) {
+                    console.error("Server error: ", response.status);
+                    return;
+                }
+
                 const notifications = await response.json();
 
                 notifications.forEach((n) => {
