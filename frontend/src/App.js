@@ -29,33 +29,18 @@ function App() {
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			console.log("Auth state changed, session:", session);
 			setSession(session);
+			setUserId(session?.user?.id ?? null);
 		});
+
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setSession(session);
+			setUserId(session?.user?.id ?? null);
+			if (session) {
+				console.log("Valid session on app load:", session.user.id);
+			}
+		});
+
 		return () => subscription.unsubscribe();
-	}, []);
-
-
-	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
-
-	useEffect(() => {
-		const checkSession = async () => {
-			const { data: { user }, error } = await supabase.auth.getUser();
-			if (!user || error) {
-				console.log("No valid Supabase session — signing out.");
-				await supabase.auth.signOut();
-			} else {
-				console.log("Valid session detected on app load:", user.id);
-			}
-		};
-
-		checkSession();
 	}, []);
 		
 	return (
@@ -70,7 +55,7 @@ function App() {
 					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/profile" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
-                    <Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />"
+                    <Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />
 				</Routes>
 			</BrowserRouter>
 			<ToastContainer position="top-right" autoClose={5000} />
