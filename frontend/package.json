@@ -24,7 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "https://orbital-25-kjmn.onrender.com",
   "eslintConfig": {
     "extends": [
       "react-app",
