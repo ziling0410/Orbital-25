@@ -95,7 +95,7 @@ function AddListings() {
 				</div>
 				<div className="addlistings-top-right" onClick={handleProfileClick}>
 					<p>{userProfile.username}</p>
-					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
+					<img src={`${process.env.REACT_APP_BACKEND_URL}${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<input

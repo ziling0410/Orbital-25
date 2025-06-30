@@ -68,7 +68,7 @@ function Profile() {
 		return (
 			<div className="listings-card">
 				<h3>wtt - {listing.have}</h3>
-				<img src={`http://localhost:3000${listing.image_url}`} alt="Item" />
+				<img src={`${process.env.REACT_APP_BACKEND_URL}${listing.image_url}`} alt="Item" />
 				<h3>want - {listing.want}</h3>
 			</div>
 		)
@@ -95,13 +95,13 @@ function Profile() {
 				</div>
 				<div className="profile-top-right">
 					<p>{userProfile.username}</p>
-					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
+					<img src={`${process.env.REACT_APP_BACKEND_URL}${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<div className="profile-center">
 				<div className="profile-center-top">
 					<div className="profile-center-top-left">
-						<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-img" />
+						<img src={`${process.env.REACT_APP_BACKEND_URL}${userProfile.image_url}`} alt="Profile" className="profile-img" />
 					</div>
 					<div className="profile-center-top-right">
 						<p>{userProfile.username}</p>

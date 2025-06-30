@@ -66,7 +66,7 @@ function Listings() {
 		return (
 			<div className="listings-card">
 				<h3>wtt - {listing.have}</h3>
-				<img src={`http://localhost:3000${listing.image_url}`} alt="Item" />
+				<img src={`${process.env.REACT_APP_BACKEND_URL}${listing.image_url}`} alt="Item" />
 				<h3>want - {listing.want}</h3>
 			</div>
 		)
@@ -141,7 +141,7 @@ function Listings() {
 				</div>
 				<div className="listings-top-right" onClick={handleProfileClick}>
 					<p>{userProfile.username}</p>
-					<img src={`http://localhost:3000${userProfile.image_url}`} alt="Profile" className="profile-pic" />
+					<img src={`${process.env.REACT_APP_BACKEND_URL}${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
 			</div>
 			<div className="listings-center">
