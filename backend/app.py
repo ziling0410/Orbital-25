@@ -12,7 +12,8 @@ app = Flask(__name__, template_folder = "./templates")
 CORS(app)
 bcrypt = Bcrypt(app)
 
-client = MongoClient("mongodb+srv://ziling:GanXie1999@orbital.p2xujzb.mongodb.net/?retryWrites=true&w=majority&appName=Orbital")
+mongo_url = os.environ.get("MONGODB_URI")
+client = MongoClient(mongo_url)
 db = client["merchmates"] # Creates "merchmates" database
 users = db["users"] # Creates "users" collection within "merchmates" database
 trade_listings = db["trade_listings"]
