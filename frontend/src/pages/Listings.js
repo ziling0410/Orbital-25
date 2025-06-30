@@ -50,8 +50,8 @@ function Listings() {
 	}, [userId]);
 
 	const fetchListings = useCallback(async () => {
-		const responseOthers = await fetch(`http://localhost:3000/get-listings?excludeId=${userId}`);
-		const responseSelf = await fetch(`http://localhost:3000/get-listings?id=${userId}`);
+		const responseOthers = await fetch(`/get-listings?excludeId=${userId}`);
+		const responseSelf = await fetch(`/get-listings?id=${userId}`);
 		const dataOthers = await responseOthers.json();
 		const dataSelf = await responseSelf.json();
 		setMyListings(dataSelf);

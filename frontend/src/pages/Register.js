@@ -119,8 +119,6 @@ function Register() {
 			<br />
 			<button className="register-button" onClick = {handleRegister}>Register</button>
 			<br />
-			<p>{message}</p>
-			<br />
 			<button className="register-button" onClick = {() => navigate("/")}>Back to Home</button>
 		</div>
 	);
