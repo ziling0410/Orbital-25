@@ -13,7 +13,7 @@ function useNotificationPoller(userId) {
 
         const pollNotifications = async () => {
             try {
-                const response = await fetch(`/notifications?userId=${userId}`);
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/notifications?userId=${userId}`);
 
                 if (!response.ok) {
                     console.error("Server error: ", response.status);
@@ -30,7 +30,7 @@ function useNotificationPoller(userId) {
                             onClick: () => {
                                 navigate(`/trade/${n.trade_id}`);
 
-                                fetch(`/mark-notification-read`, {
+                                fetch(`${process.env.REACT_APP_BACKEND_URL}/mark-notification-read`, {
                                     method: "POST",
                                     headers: {
                                         "Content-Type": "application/json",

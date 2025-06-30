@@ -46,7 +46,7 @@ function Register() {
 			formData.append("description", description);
 			formData.append("location", location);
 
-			const response = await fetch("/save-username", {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/save-username`, {
 				method: "POST",
 				body: formData,
 			});

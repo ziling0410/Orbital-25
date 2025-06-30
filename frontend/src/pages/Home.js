@@ -23,7 +23,7 @@ function Home() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch("/get-profile", {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: userId })

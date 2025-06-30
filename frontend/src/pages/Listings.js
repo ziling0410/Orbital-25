@@ -28,7 +28,7 @@ function Listings() {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await fetch("/get-profile", {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ id: userId })
@@ -50,8 +50,8 @@ function Listings() {
 	}, [userId]);
 
 	const fetchListings = useCallback(async () => {
-		const responseOthers = await fetch(`/get-listings?excludeId=${userId}`);
-		const responseSelf = await fetch(`/get-listings?id=${userId}`);
+		const responseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?excludeId=${userId}`);
+		const responseSelf = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?id=${userId}`);
 		const dataOthers = await responseOthers.json();
 		const dataSelf = await responseSelf.json();
 		setMyListings(dataSelf);
@@ -90,8 +90,8 @@ function Listings() {
 	};
 
 	const handleSearch = async () => {
-		const searchResponseOthers = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
-		const searchResponseSelf = await fetch(`/search-listings?keyword=${encodeURIComponent(searchInput)}&id=${userId}`);
+		const searchResponseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
+		const searchResponseSelf = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&id=${userId}`);
 		const searchDataOthers = await searchResponseOthers.json();
 		const searchDataSelf = await searchResponseSelf.json();
 		setOtherListings(searchDataOthers);
@@ -104,7 +104,7 @@ function Listings() {
 	};
 
 	const handleLike = async () => {
-		const response = await fetch("http://localhost:3000/start-trade", {
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/start-trade`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

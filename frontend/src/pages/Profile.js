@@ -23,7 +23,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await fetch("/get-profile", {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ id: userId })
@@ -47,7 +47,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchListing = async () => {
 			try {
-				const response = await fetch(`http://localhost:3000/get-listings?id=${userId}`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?id=${userId}`);
 				if (response.ok) {
 					const listingsData = await response.json();
 					setMyListings(listingsData);
