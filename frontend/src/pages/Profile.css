@@ -76,20 +76,38 @@
     justify-content: center;
     align-items: center;
 }
-.profile-center-bottom-box {
-    background-color: #f1ebe5;
-    width: 25%;
-    height: 80%;
-    border-radius: 70px;
+.profile-center-bottom-nav {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    border-bottom: 1px solid #d0c4b0;
+    margin-bottom: 30px;
 }
-.profile-center-bottom-box-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.nav-tab {
+    padding: 15px 30px;
+    background: none;
+    font-size: 1.1rem;
+    color: #666;
+    border: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+.nav-tab:hover {
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+.nav-tab.active {
+    color: #333;
+    border-bottom-color: #333;
+    font-weight: 600;
+}
+.profile-center-bottom-tab-content {
+    min-height: 400px;
+}
+.tab-pane {
+    display: none;
+}
+.tab-pane.active {
+    display: block;
 }
 .profile-bottom {
     flex: 1;
