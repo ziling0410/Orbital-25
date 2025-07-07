@@ -5,6 +5,7 @@ import { CiMapPin } from "react-icons/ci";
 import "./Profile.css";
 
 function Profile() {
+	const [activeTab, setActiveTab] = useState("about");
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
     const [myListings, setMyListings] = useState([]);
@@ -23,7 +24,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await fetch("/get-profile", {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ id: userId })
@@ -47,7 +48,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchListing = async () => {
 			try {
-				const response = await fetch(`http://localhost:3000/get-listings?id=${userId}`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?id=${userId}`);
 				if (response.ok) {
 					const listingsData = await response.json();
 					setMyListings(listingsData);
@@ -83,6 +84,33 @@ function Profile() {
 		navigate("/");
 	};
 
+	const renderTabContent = () => {
+		switch (activeTab) {
+			case "about":
+				return (
+					<div className="about">
+						<div className="about-box">
+							<p>Trades: </p>
+							<p>Member since </p>
+						</div>
+					</div>
+				);
+			case "listings":
+				return (
+					<div className="listings">
+						<p>Available for Trade:</p>
+						<div className="listings-box">
+							<div className="listings-box-item">
+								{myListings[0] ? displayListings(myListings[0]) : <p>No listings found.</p>}
+							</div>
+						</div>
+					</div>
+				);
+			default:
+				return null;
+		}
+	};
+
 	if (!userProfile) {
 		return null;
 	}
@@ -113,10 +141,26 @@ function Profile() {
 					</div>
 				</div>
 				<div className="profile-center-bottom">
-					<p>Available for Trade:</p>
-					<div className="profile-center-bottom-box">
-						<div className="profile-center-bottom-box-item">
-							{myListings[0] ? displayListings(myListings[0]) : <p>No listings found.</p>}
+					<div className="profile-center-bottom-nav">
+						<button
+							className={`nav-tab ${activeTab === "about" ? "active" : ""}`}
+							onClick={() => setActiveTab("about")}
+						>
+							About
+						</button>
+						<button
+							className={`nav-tab ${activeTab === "listings" ? "active" : ""}`}
+							onClick={() => setActiveTab("listings")}
+						>
+							Listings
+						</button>
+					</div>
+					<div className="profile-center-bottom-tab-content">
+						<div className={`tab-pane ${activeTab === "about" ? "active" : ""}`}>
+                            {renderTabContent()}
+						</div>
+						<div className={`tab-pane ${activeTab === "listings" ? "active" : ""}`}>
+							{renderTabContent()}
 						</div>
 					</div>
 				</div>

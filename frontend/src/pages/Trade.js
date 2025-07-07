@@ -23,7 +23,7 @@ function Trade() {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await fetch("/get-profile", {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ id: userId })
@@ -50,7 +50,7 @@ function Trade() {
 
 	const fetchTrade = async () => {
 		try {
-			const response = await fetch(`http://localhost:3000/trade/${tradeId}`);
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/trade/${tradeId}`);
 			if (response.ok) {
 				const data = await response.json();
 				setTrade(data);
@@ -70,7 +70,7 @@ function Trade() {
 
 	const updateStatus = async (user_id, status) => {
 		try {
-			const response = await fetch("http://localhost:3000/update-trade-status", {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/update-trade-status`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -90,7 +90,7 @@ function Trade() {
 
 	const rejectTrade = async () => {
 		try {
-			const response = await fetch("http://localhost:3000/reject-trade", {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/reject-trade`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
