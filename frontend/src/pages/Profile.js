@@ -8,7 +8,8 @@ function Profile() {
 	const [activeTab, setActiveTab] = useState("about");
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
-    const [myListings, setMyListings] = useState([]);
+	const [myListings, setMyListings] = useState([]);
+    const [completedTradeNumber, setCompletedTradeNumber] = useState(0);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -65,6 +66,26 @@ function Profile() {
 		}
 	}, [userId]);
 
+	useEffect(() => {
+		const fetchCompletedTrades = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-completed-trades-number?id=${userId}`);
+				if (response.ok) {
+					const completedTradeNumber = await response.json();
+					setCompletedTradeNumber(completedTradeNumber.count);
+				} else {
+					console.error("Error loading completed trades");
+				}
+			} catch (error) {
+				console.error("Network error loading completed trades:", error);
+			}
+		};
+
+		if (userId) {
+			fetchCompletedTrades();
+		}
+	}, [userId]);
+
 	const displayListings = (listing) => {
 		return (
 			<div className="listings-card">
@@ -88,10 +109,10 @@ function Profile() {
 		switch (activeTab) {
 			case "about":
 				return (
-					<div className="about">
-						<div className="about-box">
-							<p>Trades: </p>
-							<p>Member since </p>
+					<div className="about-box">
+						<div className="about-box-item">
+							<p>Trades: {completedTradeNumber}</p>
+							<p>Member since {new Date(userProfile.created_at).getFullYear()}</p>
 						</div>
 					</div>
 				);
