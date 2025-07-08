@@ -156,8 +156,10 @@ function Home() {
                 </div>
                 <div className="home-bottom-right">
                     <div className="home-bottom-right-box">
-                        <button className="trade" onClick={handleTrade}>Trade</button>
+                        <button className="trade" onClick={handleTrade}>Trades</button>
                         <button className="trade" onClick={handleNotifications}>Notifications</button>
+                        <button className="trade">Trade History</button>
+                        <button className="trade">Chat</button>
                     </div>
                 </div>
             </div>

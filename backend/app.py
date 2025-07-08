@@ -44,7 +44,8 @@ def save_username():
         "username": username, 
         "profilePictureId": image_id, 
         "description": description, 
-        "location": location})
+        "location": location,
+        "created_at": datetime.now()})
     return jsonify({"message": "User registered succesfully"}), 201 # Return message & 201 Created response
 
 @app.route("/get-profile", methods = ["POST"])
@@ -110,6 +111,13 @@ def get_listings():
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
     return jsonify(listings), 200
+
+@app.route("/get-completed-trades-number", methods = ["GET"])
+def get_completed_trades():
+    user_id = request.args.get("id")
+    query = {"$or": [{"userA_id": user_id}, {"userB_id": user_id}]}
+    count = completed_trades.count_documents(query)
+    return jsonify({"count": count}), 200
 
 @app.route("/add-listings", methods = ["POST"])
 def add_listings():
