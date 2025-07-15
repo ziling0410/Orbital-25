@@ -15,6 +15,8 @@ function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
+		await supabase.auth.signOut();
+
 		const { data, error } = await supabase.auth.signUp({
 			email,
 			password,
@@ -26,6 +28,11 @@ function Register() {
 
 		const user = data.user;
 
+		if (!user) {
+			setMessage("User creation failed — no user returned.");
+			return;
+		}
+
 		const formData = new FormData();
 		formData.append("username", username);
 		formData.append("profilePicture", image);
@@ -33,7 +40,7 @@ function Register() {
 		formData.append("description", description);
 		formData.append("location", location);
 
-		if (user) {
+		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/save-username`, {
 				method: "POST",
 				body: formData,
@@ -46,8 +53,8 @@ function Register() {
 				const err = await response.text();
 				setMessage("Error saving username: " + err);
 			}
-		} else {
-			setMessage("User ID not found after login.");
+		} catch (err) {
+			setMessage("Network error saving profile: " + err.message);
 		}
 	};
 		
