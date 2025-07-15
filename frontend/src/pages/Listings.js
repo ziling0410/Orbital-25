@@ -33,11 +33,6 @@ function Listings() {
 	}, []);
 
 	useEffect(() => {
-		console.log("User changed: ", userId);
-	})
-
-
-	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
                 console.log("Fetching profile for user ID:", userId);

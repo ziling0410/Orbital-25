@@ -68,6 +68,14 @@ function Home() {
         }
     };
 
+    const handleTradeHistory = async () => {
+        if (!userId) {
+            navigate("/login");
+        } else {
+            navigate("/trade-history");
+        }
+    };
+
     const handleClearSearch = () => {
         setSearchInput("");
     };
@@ -158,7 +166,7 @@ function Home() {
                     <div className="home-bottom-right-box">
                         <button className="trade" onClick={handleTrade}>Trades</button>
                         <button className="trade" onClick={handleNotifications}>Notifications</button>
-                        <button className="trade">Trade History</button>
+                        <button className="trade" onClick={handleTradeHistory}>Trade History</button>
                         <button className="trade">Chat</button>
                     </div>
                 </div>

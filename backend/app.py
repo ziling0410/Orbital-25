@@ -125,6 +125,20 @@ def get_completed_trades():
     count = completed_trades.count_documents(query)
     return jsonify({"count": count}), 200
 
+@app.route("/trade-history", methods = ["GET"])
+def get_trade_history():
+    user_id = request.args.get("id")
+    query = {}
+
+    query["user_id"] = user_id
+
+    trade_history = list(completed_trades.find(query).sort("created_at", DESCENDING))
+    for trade in trade_history:
+        trade["_id"] = str(trade["_id"])
+        trade["image_url"] = f'/image/{str(trade["haveImageId"])}'
+        trade["haveImageId"] = str(trade["haveImageId"])
+    return jsonify(trade_history), 200
+
 @app.route("/add-listings", methods = ["POST"])
 def add_listings():
     data = request.form
