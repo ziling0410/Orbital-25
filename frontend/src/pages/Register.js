@@ -15,37 +15,25 @@ function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
-		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+		const { data, error } = await supabase.auth.signUp({
 			email,
 			password,
 		});
 
-		if (signUpError) {
-			setMessage("Registration failed: " + signUpError.message);
-			return;
+		if (error) {
+			setMessage("Registration failed: " + error.message);
 		}
 
-		const { error: signInError } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
+		const user = data.user;
 
-		if (signInError) {
-			setMessage("Login after signup failed: " + signInError.message);
-			return;
-		}
+		const formData = new FormData();
+		formData.append("username", username);
+		formData.append("profilePicture", image);
+		formData.append("id", user.id);
+		formData.append("description", description);
+		formData.append("location", location);
 
-		const { data: userData } = await supabase.auth.getUser();
-		const user = userData?.user;
-
-		if (user && user.id) {
-			const formData = new FormData();
-			formData.append("username", username);
-			formData.append("profilePicture", image);
-			formData.append("id", user.id);
-			formData.append("description", description);
-			formData.append("location", location);
-
+		if (user) {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/save-username`, {
 				method: "POST",
 				body: formData,
@@ -62,7 +50,6 @@ function Register() {
 			setMessage("User ID not found after login.");
 		}
 	};
-
 		
 	return (
 		<div className="register-entire">
