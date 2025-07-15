@@ -17,17 +17,30 @@ function Listings() {
 
 	useEffect(() => {
 		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
+			const { data: { session }, error } = await supabase.auth.getSession();
+			if (error) {
+				console.error("Error getting session:", error);
+				return;
+			}
+			if (session?.user) {
+				setUserId(session.user.id);
+				console.log("Set user ID from session:", session.user.id);
+			} else {
+				console.log("No user session found");
 			}
 		};
 		getUser();
 	}, []);
 
 	useEffect(() => {
+		console.log("User changed: ", userId);
+	})
+
+
+	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
+                console.log("Fetching profile for user ID:", userId);
 				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
