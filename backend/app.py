@@ -128,9 +128,7 @@ def get_completed_trades():
 @app.route("/trade-history", methods = ["GET"])
 def get_trade_history():
     user_id = request.args.get("id")
-    query = {}
-
-    query["user_id"] = user_id
+    query = {"$or": [{"userA_id": user_id}, {"userB_id": user_id}]}
 
     trade_history = list(completed_trades.find(query).sort("created_at", DESCENDING))
     for trade in trade_history:
