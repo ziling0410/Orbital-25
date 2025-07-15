@@ -51,7 +51,12 @@ def get_profile():
     data = request.json
     user_id = data["id"]
 
-    user = users.find_one({"id": user_id})
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    user = users.find_one({"user_id": user_id})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
 
     user["_id"] = str(user["_id"])
     user["image_url"] = f'/image/{str(user["profilePictureId"])}'
