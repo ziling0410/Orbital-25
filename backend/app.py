@@ -56,7 +56,8 @@ def get_profile():
     if not user_id:
         return jsonify({"error": "User ID is required"}), 400
 
-    user = users.find_one({"user_id": user_id})
+    user = users.find_one({"id": user_id})
+
     if not user:
         return jsonify({"error": "User not found"}), 404
 
