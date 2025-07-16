@@ -1,3 +1,4 @@
+from operator import itemgetter
 import re
 from flask import Flask, render_template, request, jsonify, send_file
 from pymongo import MongoClient, DESCENDING
@@ -135,6 +136,20 @@ def get_trade_history():
         trade["_id"] = str(trade["_id"])
         trade["image_url"] = f'/image/{str(trade["haveImageId"])}'
         trade["haveImageId"] = str(trade["haveImageId"])
+
+        if trade["userA_id"] == user_id:
+            other_user = users.find_one({"id": trade["userB_id"]})
+            own_item = trade["userA_have"]
+            other_item = trade["userB_have"]
+        else:
+            other_user = users.find_one({"id": trade["userA_id"]})
+            own_item = trade["userB_have"]
+            other_item = trade["userA_have"]
+        
+        trade["other_user"] = other_user["username"]
+        trade["own_item"] = own_item
+        trade["other_item"] = other_item
+
     return jsonify(trade_history), 200
 
 @app.route("/add-listings", methods = ["POST"])

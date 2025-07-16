@@ -107,7 +107,30 @@ function TradeHistory() {
 				</div>
 			</div>
 			<div className="trade-history-center">
-				<p>{tradeHistory}</p>
+				{tradeHistory.length === 0 ? (
+					<p>No completed trades yet.</p>
+				) : (
+					<table className="trade-history-table">
+						<thead>
+							<tr>
+								<th className="trade-history-col-user">User</th>
+								<th className="trade-history-col-item">Your Item</th>
+								<th className="trade-history-col-item">Their Item</th>
+								<th className="trade-history-col-time">Time</th>
+							</tr>
+						</thead>
+						<tbody>
+							{tradeHistory.map((trade) => (
+								<tr key={trade._id} onClick={() => navigate(`/trade/${trade._id}`)}>
+									<td className="trade-history-col-user">{trade.other_user}</td>
+									<td className="trade-history-col-item">{trade.own_item}</td>
+									<td className="trade-history-col-item">{trade.other_item}</td>
+									<td className="trade-history-col-time">{new Date(trade.created_at).toLocaleString()}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				)}
 			</div>
 			<div className="listings-bottom">
 				<button className="function-button" onClick={handleLogout}>Logout</button>
