@@ -23,14 +23,13 @@ function Register() {
 		});
 
 		if (error) {
-			setMessage("Registration failed: " + error.message);
+			console.log("Registration failed: " + error.message);
 		}
 
 		const user = data.user;
 
 		if (!user) {
-			setMessage("User creation failed — no user returned.");
-			return;
+			console.log("User creation failed — no user returned.");
 		}
 
 		const formData = new FormData();
@@ -47,14 +46,14 @@ function Register() {
 			});
 
 			if (response.ok) {
-				setMessage("Registration successful!");
+				setMessage("Registration successful! Please check your mailbox for the confirmation email. If the link doesn't direct you back to this page, please come back to this page and refresh it to login.");
 				navigate("/");
 			} else {
 				const err = await response.text();
-				setMessage("Error saving username: " + err);
+				console.log("Error saving username: " + err);
 			}
 		} catch (err) {
-			setMessage("Network error saving profile: " + err.message);
+			console.log("Network error saving profile: " + err.message);
 		}
 	};
 		

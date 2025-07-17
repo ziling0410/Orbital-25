@@ -96,12 +96,12 @@ function TradeHistory() {
 	}
 
 	return (
-		<div className="listings-entire">
-			<div className="listings-top">
-				<div className="listings-top-left" onClick={handleHomeClick}>
+		<div className="trade-history-entire">
+			<div className="trade-history-top">
+				<div className="trade-history-top-left" onClick={handleHomeClick}>
 					<h1 className="home-brand">MERCHMATES</h1>
 				</div>
-				<div className="listings-top-right" onClick={handleProfileClick}>
+				<div className="trade-history-top-right" onClick={handleProfileClick}>
 					<p>{userProfile.username}</p>
 					<img src={`${process.env.REACT_APP_BACKEND_URL}${userProfile.image_url}`} alt="Profile" className="profile-pic" />
 				</div>
@@ -132,7 +132,7 @@ function TradeHistory() {
 					</table>
 				)}
 			</div>
-			<div className="listings-bottom">
+			<div className="trade-history-bottom">
 				<button className="function-button" onClick={handleLogout}>Logout</button>
 			</div>
 		</div>
