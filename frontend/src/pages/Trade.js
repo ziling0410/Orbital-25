@@ -110,7 +110,7 @@ function Trade() {
 
 	const leaveReview = async (tradeId) => {
 		try {
-			navigate(`${process.env.REACT_APP_BACKEND_URL}/review/${tradeId}`);
+			navigate(`/review/${tradeId}`);
 		} catch (error) {
 			console.log("Error navigating to leave review: ", error);
 		}
