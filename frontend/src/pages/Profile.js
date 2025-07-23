@@ -8,6 +8,8 @@ function Profile() {
 	const [activeTab, setActiveTab] = useState("about");
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
+	const [rating, setRating] = useState(0);
+	const [reviewNumber, setReviewNumber] = useState(0);
 	const [myListings, setMyListings] = useState([]);
     const [completedTradeNumber, setCompletedTradeNumber] = useState(0);
 	const navigate = useNavigate();
@@ -86,6 +88,28 @@ function Profile() {
 		}
 	}, [userId]);
 
+	useEffect(() => {
+		const fetchRating = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-rating?id=${userId}`);
+				if (response.ok) {
+					const ratingData = await response.json();
+					setRating(ratingData.average_rating);
+					setReviewNumber(ratingData.review_number);
+				} else {
+					console.error("Error loading rating");
+				}
+			} catch (error) {
+				console.error("Network error loading rating:", error);
+			
+			}
+		};
+
+		if (userId) {
+			fetchRating();
+		}
+	}, [userId]);
+
 	const displayListings = (listing) => {
 		return (
 			<div className="listings-card">
@@ -159,6 +183,7 @@ function Profile() {
 							<CiMapPin />
 							<p>{userProfile.location}</p>
 						</div>
+						<p>Average rating: {rating} ({reviewNumber} reviews)</p>
 					</div>
 				</div>
 				<div className="profile-center-bottom">

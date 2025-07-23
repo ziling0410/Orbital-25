@@ -6,7 +6,7 @@
 .trade-history-top {
 	flex: 0 0 10%;
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
 }
@@ -31,6 +31,7 @@
 	flex-direction: row;
 	margin-left: 5%;
 	font-size: 20px;
+	width: 100%;
 }
 .trade-history-table {
 	width: 100%;

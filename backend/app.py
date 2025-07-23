@@ -22,6 +22,7 @@ trade_listings = db["trade_listings"]
 ongoing_trades = db["ongoing_trades"]
 notifications = db["notifications"]
 completed_trades = db["completed_trades"]
+reviews = db["reviews"]
 fs = gridfs.GridFS(db)
 
 @app.route("/save-username", methods = ["POST"])
@@ -356,6 +357,47 @@ def mark_notification_read():
         return jsonify({"message": "Notification not found or already read"}), 404
     else:
         return jsonify({"message": "Notification marked as read"}), 200
+
+@app.route("/review", methods = ["POST"])
+def review():
+    data = request.form
+    review = data.get("review")
+    rating = data.get("rating")
+    reviewer_id = data.get("reviewer_id")
+    trade_id = data.get("trade_id")
+
+    existing_review = reviews.find_one({"trade_id": trade_id, "reviewer_id": reviewer_id})
+
+    if existing_review:
+        return jsonify({"message": "You have already reviewed this trade"}), 400
+
+    trade = completed_trades.find_one({"_id": ObjectId(trade_id)})
+    reviewed_id = trade["userA_id"] if trade["userB_id"] == reviewer_id else trade["userB_id"]
+
+    reviews.insert_one({
+        "trade_id": trade_id,
+        "reviewer_id": reviewer_id,
+        "reviewed_id": reviewed_id,
+        "rating": rating,
+        "review": review,
+        "created_at": datetime.now()})
+
+    return jsonify({"message": "Review added successfully"}), 201
+
+@app.route("/get-average-rating", methods = ["GET"])
+def get_average_rating():
+    user_id = request.args.get("id")
+
+    all_reviews = reviews.find({"reviewed_id": user_id})
+
+    if not all_reviews:
+        return jsonify({"average_rating": 0, "total_reviews": 0}), 200
+
+    total_rating = sum(review["rating"] for review in all_reviews)
+    total_reviews = all_reviews.count()
+    average_rating = total_rating / total_reviews if total_reviews > 0 else 0
+
+    return jsonify({"average_rating": average_rating, "total_reviews": total_reviews}), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

@@ -108,6 +108,14 @@ function Trade() {
 		}
 	};
 
+	const leaveReview = async (tradeId) => {
+		try {
+			navigate(`${process.env.REACT_APP_BACKEND_URL}/review/${tradeId}`);
+		} catch (error) {
+			console.log("Error navigating to leave review: ", error);
+		}
+	};
+
 	if (!userProfile || !trade) {
 		return null;
 	}
@@ -180,6 +188,11 @@ function Trade() {
 							<button className="trade-button" onClick={() => updateStatus(userId, "Completed")}>Confirm Received</button>
 						</div>
                     )}
+					{trade[`user${userId === trade["userA_id"] ? "A" : "B"}_status`] === "Completed" && (
+						<div className="trade-buttons">
+							<button className="trade-button" onClick={() => leaveReview(tradeId)}>Leave a Review</button>
+						</div>
+					)}
 				</div>
 				<div className="trade-bottom-right">
 					<button className="trade-home-button" onClick={() => navigate("/get-listings")}>Back to Listings</button>

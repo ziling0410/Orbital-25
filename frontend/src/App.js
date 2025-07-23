@@ -13,6 +13,7 @@ import Trade from "./pages/Trade";
 import TradeHistory from "./pages/TradeHistory";
 import NotificationPollerWrapper from "./pages/NotificationPollerWrapper";
 import Notifications from "./pages/Notifications.js";
+import Review from "./pages/Review.js";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
@@ -58,6 +59,7 @@ function App() {
 					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
 					<Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />
                     <Route path="/trade-history" element={session ? <TradeHistory userId={userId} /> : <Navigate to="/login" />} />
+					<Route path="/review:tradeId" element={session ? <Review userId={userId} /> : <Navigate to="/login" />} />
 				</Routes>
 			</BrowserRouter>
 			<ToastContainer position="top-right" autoClose={5000} />
