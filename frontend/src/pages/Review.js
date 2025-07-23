@@ -106,9 +106,9 @@ function Review() {
 					onChange={ratingChanged}
 					size={24}
 					isHalf={true}
-					emptyIcon={<i className="far fa-star"></i>}
-					halfIcon={<i className="fa fa-star-half-alt"></i>}
-					fullIcon={<i className="fa fa-star"></i>}
+					emptyIcon={<span>☆</span>}
+					halfIcon={<span>⯪</span>}
+					fullIcon={<span>★</span>}
 					activeColor="#ffd700"
 				/>
 				<br />
