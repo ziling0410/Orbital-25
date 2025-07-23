@@ -106,9 +106,6 @@ function Review() {
 					onChange={ratingChanged}
 					size={24}
 					isHalf={true}
-					emptyIcon={<span>☆</span>}
-					halfIcon={<span>⯪</span>}
-					fullIcon={<span>★</span>}
 					activeColor="#ffd700"
 				/>
 				<br />
