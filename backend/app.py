@@ -363,6 +363,7 @@ def review():
     data = request.form
     review = data.get("review")
     rating = data.get("rating")
+    rating = int(float(rating))
     reviewer_id = data.get("reviewer_id")
     trade_id = data.get("trade_id")
 
