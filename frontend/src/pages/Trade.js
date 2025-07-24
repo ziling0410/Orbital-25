@@ -110,7 +110,25 @@ function Trade() {
 
 	const leaveReview = async (tradeId) => {
 		try {
-			navigate(`/review/${tradeId}`);
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/check-review`, {
+				method = "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					reviewer_id: userId,
+					trade_id: tradeId,
+				}),
+			});
+
+			const result = await response.json();
+
+			if (result.already_reviewed) {
+				alert("You have already left a review for this trade.");
+			} else {
+				navigate(`/review/${tradeId}`);
+			}
+
 		} catch (error) {
 			console.log("Error navigating to leave review: ", error);
 		}

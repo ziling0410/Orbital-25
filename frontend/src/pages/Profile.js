@@ -91,7 +91,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchRating = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-rating?id=${userId}`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-average-rating?id=${userId}`);
 				if (response.ok) {
 					const ratingData = await response.json();
 					setRating(ratingData.average_rating);

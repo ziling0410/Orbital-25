@@ -42,7 +42,7 @@ function Review() {
 
 		if (response.ok) {
 			setMessage("Review added successfully");
-			navigate("/get-listings");
+			navigate("/");
 		} else {
 			const error = await response.json();
 			setMessage("Error: " + error.message);

@@ -366,11 +366,6 @@ def review():
     reviewer_id = data.get("reviewer_id")
     trade_id = data.get("trade_id")
 
-    existing_review = reviews.find_one({"trade_id": trade_id, "reviewer_id": reviewer_id})
-
-    if existing_review:
-        return jsonify({"message": "You have already reviewed this trade"}), 400
-
     trade = completed_trades.find_one({"_id": ObjectId(trade_id)})
     reviewed_id = trade["userA_id"] if trade["userB_id"] == reviewer_id else trade["userB_id"]
 
@@ -383,6 +378,21 @@ def review():
         "created_at": datetime.now()})
 
     return jsonify({"message": "Review added successfully"}), 201
+
+@app.route("/check-review", methods = ["POST"])
+def check_review():
+    data = request.json
+    reviewer_id = data.get("reviewer_id")
+    trade_id = data.get("trade_id")
+
+    existing_review = reviews.find_one({
+        "reviewer_id": reviewer_id, 
+        "trade_id": trade_id})
+    
+    if existing_review:
+        return jsonify({"already_reviewed": True}), 200
+    else:
+        return jsonify({"already_reviewed": False}), 200
 
 @app.route("/get-average-rating", methods = ["GET"])
 def get_average_rating():
