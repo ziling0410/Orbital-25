@@ -104,6 +104,10 @@ function Review() {
 			<div className="review-center">
 				<Rating
 					onClick={ratingChanged}
+					transition={true}
+					allowFraction={true}
+					fillColor="#FFD700"
+					emptyColor="#888888"
 				/>
 				<br />
 				<input
