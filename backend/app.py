@@ -405,7 +405,7 @@ def get_average_rating():
         return jsonify({"average_rating": 0, "total_reviews": 0}), 200
 
     total_rating = sum(review["rating"] for review in all_reviews)
-    total_reviews = all_reviews.count_documents()
+    total_reviews = reviews.count_documents({"reviewed_id": user_id})
     average_rating = total_rating / total_reviews if total_reviews > 0 else 0
 
     return jsonify({"average_rating": average_rating, "total_reviews": total_reviews}), 200
