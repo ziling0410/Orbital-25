@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
-import ReactStars from "react-rating-stars-component";
+import { Rating } from "react-simple-star-rating";
 
 function Review() {
 	const { tradeId } = useParams();
@@ -24,6 +24,7 @@ function Review() {
 
 	const ratingChanged = (newRating) => {
 		setRating(newRating);
+        console.log("Rating changed to:", newRating);
 	}
 
 	const submitReview = async () => {
@@ -101,12 +102,8 @@ function Review() {
 				</div>
 			</div>
 			<div className="review-center">
-				<ReactStars
-					count={5}
-					onChange={ratingChanged}
-					size={24}
-					isHalf={true}
-					activeColor="#ffd700"
+				<Rating
+					onClick={ratingChanged}
 				/>
 				<br />
 				<input
