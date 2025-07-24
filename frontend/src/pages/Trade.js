@@ -111,7 +111,7 @@ function Trade() {
 	const leaveReview = async (tradeId) => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/check-review`, {
-				method = "POST",
+				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
