@@ -9,7 +9,7 @@ function Profile() {
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const [rating, setRating] = useState(0);
-	const [reviewNumber, setReviewNumber] = useState(0);
+	const [totalReviews, setTotalReviews] = useState(0);
 	const [myListings, setMyListings] = useState([]);
     const [completedTradeNumber, setCompletedTradeNumber] = useState(0);
 	const navigate = useNavigate();
@@ -95,7 +95,7 @@ function Profile() {
 				if (response.ok) {
 					const ratingData = await response.json();
 					setRating(ratingData.average_rating);
-					setReviewNumber(ratingData.review_number);
+					setTotalReviews(ratingData.total_reviews);
 				} else {
 					console.error("Error loading rating");
 				}
@@ -183,7 +183,7 @@ function Profile() {
 							<CiMapPin />
 							<p>{userProfile.location}</p>
 						</div>
-						<p>Average rating: {rating} ({reviewNumber} reviews)</p>
+						<p>Average rating: {rating} ({totalReviews} reviews)</p>
 					</div>
 				</div>
 				<div className="profile-center-bottom">
