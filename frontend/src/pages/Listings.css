@@ -50,6 +50,7 @@
 }
 .listings-center-left-box, .listings-center-right-box {
     background-color: #f1ebe5;
+	max-height: 500px;
     max-width: 400px;
     height: auto;
 	padding: 20px 30px;
