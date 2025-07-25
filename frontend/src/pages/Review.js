@@ -112,7 +112,7 @@ function Review() {
         navigate(`/trade/${tradeId}`);
 	}
 
-	if (!userProfile || trade) {
+	if (!userProfile) {
 		return null;
 	}
 
@@ -128,7 +128,7 @@ function Review() {
 				</div>
 			</div>
 			<div className="review-center">
-				{userId === trade["userA_id"] ? (
+				{userId === trade["userA"]["id"] ? (
 					<div>
 						<p><strong>Your Item - </strong>{trade["userA_have"]}</p>
 						<br />
@@ -136,7 +136,7 @@ function Review() {
 						<br />
 						<p><strong>User - </strong>{trade["userB"]["username"]}</p>
 					</div>
-				) : userId === trade["userB_id"] ? (
+				) : userId === trade["userB"]["id"] ? (
 					<div>
 						<p><strong>Your Item - </strong>{trade["userB_have"]}</p>
 						<br />

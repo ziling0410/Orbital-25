@@ -131,7 +131,7 @@ function TradeHistory() {
 				)}
 			</div>
 			<div className="trade-history-bottom">
-				<button className="function-button" onClick={handleLogout}>Logout</button>
+				<button className="add-button" onClick={handleLogout}>Logout</button>
 			</div>
 		</div>
 	);
