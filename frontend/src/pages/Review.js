@@ -112,7 +112,7 @@ function Review() {
         navigate(`/trade/${tradeId}`);
 	}
 
-	if (!userProfile) {
+	if (!userProfile || trade) {
 		return null;
 	}
 

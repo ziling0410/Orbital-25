@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import "./TradeHistory.css";
 
 function TradeHistory() {
 	const [userId, setUserId] = useState(null);
