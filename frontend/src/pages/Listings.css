@@ -66,12 +66,7 @@
 	padding: 20px;
 }
 .listings-center-left-bottom {
-	position: relative;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: 10px;
+	margin-bottom: 10px;
 }
 .listings-center-left-bottom-nav {
 	position: absolute;
