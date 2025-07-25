@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
+import "./Review.css";
 
 function Review() {
 	const { tradeId } = useParams();
@@ -61,6 +62,10 @@ function Review() {
 			navigate("/profile");
 		}
 	};
+
+	const backToTrade = async () => {
+        navigate(`/trade/${tradeId}`);
+	}
 
 	useEffect(() => {
 		const fetchProfile = async () => {
@@ -124,6 +129,7 @@ function Review() {
 				}}>Submit Review</button>
 			</div>
 			<div className="review-bottom">
+				<button className="add-button" onClick={backToTrade}>Back to Trade</button>
 				<button className="add-button" onClick={handleLogout}>Logout</button>
 			</div>
 		</div>

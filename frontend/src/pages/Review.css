@@ -1,0 +1,33 @@
+.review-entire {
+	margin-left: 25px;
+	margin-top: 30px;
+}
+.review-top {
+	display: flex;
+	flex-direction: row;
+}
+.review-top-left {
+	flex: 0 0 90%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+.review-top-right {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 25px;
+	gap: 20px;
+	cursor: pointer;
+}
+.add-button {
+	font-size: 18px;
+	margin-left: -3px;
+	background-color: #f1ebe5;
+	color: black;
+	padding: 4px 10px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 8px;
+}
