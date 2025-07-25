@@ -6,9 +6,6 @@ function TradeHistory() {
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const [tradeHistory, setTradeHistory] = useState([]);
-	const [myIndex, setMyIndex] = useState(0);
-	const [otherIndex, setOtherIndex] = useState(0);
-	const [searchInput, setSearchInput] = useState("");
 	const navigate = useNavigate();
 
 	useEffect(() => {
