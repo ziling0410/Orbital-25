@@ -50,9 +50,10 @@
 }
 .listings-center-left-box, .listings-center-right-box {
     background-color: #f1ebe5;
-    width: 60%;
-    height: 60%;
-    border-radius: 70px;
+    max-width: 400px;
+    height: auto;
+	padding: 20px 30px;
+    border-radius: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
