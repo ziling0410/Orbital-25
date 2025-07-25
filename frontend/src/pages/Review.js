@@ -6,6 +6,7 @@ import "./Review.css";
 
 function Review() {
 	const { tradeId } = useParams();
+	const [trade, setTrade] = useState(null);
 	const [review, setReview] = useState("");
 	const [rating, setRating] = useState(0);
 	const [message, setMessage] = useState("");
@@ -22,6 +23,50 @@ function Review() {
 		};
 		getUser();
 	}, []);
+
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: userId })
+				});
+				if (response.ok) {
+					const profileData = await response.json();
+					setUserProfile(profileData);
+				} else {
+					console.error("Error loading profile");
+				}
+			} catch (error) {
+				console.error("Network error loading profile:", error);
+			}
+		};
+
+		if (userId) {
+			fetchProfile();
+		}
+	}, [userId]);
+
+	useEffect(() => {
+		const fetchTrade = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/trade/${tradeId}`);
+				if (response.ok) {
+					const data = await response.json();
+					setTrade(data);
+				} else {
+					console.log("Failed to fetch trade");
+				}
+			} catch (error) {
+				console.log("Error fetching trade: ", error);
+			}
+		};
+
+		if (userId && tradeId) {
+			fetchTrade();
+		}
+	}, [userId, tradeId]);
 
 	const ratingChanged = (newRating) => {
 		setRating(newRating);
@@ -67,30 +112,6 @@ function Review() {
         navigate(`/trade/${tradeId}`);
 	}
 
-	useEffect(() => {
-		const fetchProfile = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ id: userId })
-				});
-				if (response.ok) {
-					const profileData = await response.json();
-					setUserProfile(profileData);
-				} else {
-					console.error("Error loading profile");
-				}
-			} catch (error) {
-				console.error("Network error loading profile:", error);
-			}
-		};
-
-		if (userId) {
-			fetchProfile();
-		}
-	}, [userId]);
-
 	if (!userProfile) {
 		return null;
 	}
@@ -107,6 +128,24 @@ function Review() {
 				</div>
 			</div>
 			<div className="review-center">
+				{userId === trade["userA_id"] ? (
+					<div>
+						<p><strong>Your Item - </strong>{trade["userA_have"]}</p>
+						<br />
+						<p><strong>Their Item - </strong>{trade["userB_have"]}</p>
+						<br />
+						<p><strong>User - </strong>{trade["userB"]["username"]}</p>
+					</div>
+				) : userId === trade["userB_id"] ? (
+					<div>
+						<p><strong>Your Item - </strong>{trade["userB_have"]}</p>
+						<br />
+						<p><strong>Their Item - </strong>{trade["userA_have"]}</p>
+						<br />
+						<p><strong>User - </strong>{trade["userA"]["username"]}</p>
+					</div>
+				) : null}
+				<br />
 				<Rating
 					onClick={ratingChanged}
 					transition={true}
