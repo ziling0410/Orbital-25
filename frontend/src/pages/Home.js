@@ -92,6 +92,10 @@ function Home() {
         navigate("/");
     };
 
+    const handleChat = () => {
+        navigate("/chat");
+    };
+
     if (!userProfile) {
         return (
             <div className="home-entire">
@@ -167,7 +171,7 @@ function Home() {
                         <button className="trade" onClick={handleTrade}>Trades</button>
                         <button className="trade" onClick={handleNotifications}>Notifications</button>
                         <button className="trade" onClick={handleTradeHistory}>Trade History</button>
-                        <button className="trade">Chat</button>
+                        <button className="trade" onClick={handleChat}>Chat</button>
                     </div>
                 </div>
             </div>
