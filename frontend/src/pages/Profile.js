@@ -152,6 +152,7 @@ function Profile() {
 						allowFraction={true}
 						initialValue={rating}
 						disableFillHover={true}
+						allowHover={false}
 						fillColor="#000000"
 						emptyColor="#888888"
 					/>
@@ -244,6 +245,7 @@ function Profile() {
 								allowFraction={true}
 								initialValue={rating}
 								disableFillHover={true}
+								allowHover={false}
 								fillColor="#000000"
 								emptyColor="#888888"
 							/>
