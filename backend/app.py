@@ -412,7 +412,7 @@ def get_average_rating():
 
 @app.route("/get-reviews", methods = ["GET"])
 def get_reviews():
-    user_id = request.args.get("userId")
+    user_id = request.args.get("id")
     
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400

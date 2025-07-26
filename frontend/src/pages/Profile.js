@@ -146,14 +146,16 @@ function Profile() {
 	const displayReview = (reviews) => {
 		return (
 			<div className="review-card">
-				<Rating
-					readOnly={true}
-					allowFraction={true}
-					initialValue={reviews.rating}
-					fillColor="#FFD700"
-					emptyColor="#888888"
-				/>
-				<p> | {reviews.reviewer.username} | {reviews.reviewer.location} | {reviews.created_at}</p>
+				<div className="profile-ratings">
+					<Rating
+						readOnly={true}
+						allowFraction={true}
+						initialValue={reviews.rating}
+						fillColor="#FFD700"
+						emptyColor="#888888"
+					/>
+					<p> | {reviews.reviewer.username} | {reviews.reviewer.location} | {reviews.created_at}</p>
+				</div>
 				<p>"{reviews.review}"</p>
 			</div>
 		)
@@ -193,20 +195,13 @@ function Profile() {
 			case "reviews":
 				return (
 					<div className="reviews">
-						<div className="reviews-box">
-							<div className="reviews-box-item">
-								{reviews[0] ? displayReview(reviews[0]) : null}
+						{reviews.slice(0, 3).map((review) => (
+							<div className="reviews-box">
+								<div className="reviews-box-item">
+									{displayReview(review)}
+								</div>
 							</div>
-						</div>
-						<div className="reviews-box">
-							<div className="reviews-box-item">
-								{reviews[1] ? displayReview(reviews[0]) : null}
-							</div>
-						</div><div className="reviews-box">
-							<div className="reviews-box-item">
-								{reviews[2] ? displayReview(reviews[0]) : null}
-							</div>
-						</div>
+						))}
 					</div>
 				)
 			default:
@@ -241,15 +236,18 @@ function Profile() {
 							<CiMapPin />
 							<p>{userProfile.location}</p>
 						</div>
-						<p>Average rating: </p>
-						<Rating
-							readOnly={true}
-							allowFraction={true}
-							initialValue={rating}
-							fillColor="#FFD700"
-							emptyColor="#888888"
-						/>
-						<p>({totalReviews} reviews)</p>
+						<div className="profile-ratings">
+							<p>Average rating: </p>
+							<Rating
+								readOnly={true}
+								allowFraction={true}
+								initialValue={rating}
+								disableFillHover={true}
+								fillColor="#FFD700"
+								emptyColor="#888888"
+							/>
+							<p>({totalReviews} reviews)</p>
+						</div>
 					</div>
 				</div>
 				<div className="profile-center-bottom">

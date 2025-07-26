@@ -136,3 +136,12 @@
     margin-left: 20px;
     align-items: center;
 }
+.profile-ratings {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.review-card {
+    background-color: #fcf6db;
+}
