@@ -410,5 +410,27 @@ def get_average_rating():
 
     return jsonify({"average_rating": average_rating, "total_reviews": total_reviews}), 200
 
+@app.route("/get-reviews", methods = ["GET"])
+def get_reviews():
+    user_id = request.args.get("userId")
+    
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+    
+    reviews_list = list(reviews.find({"reviewed_id": user_id}).sort("created_at", DESCENDING))
+    
+    for review in reviews_list:
+        review["_id"] = str(review["_id"])
+        review["created_at"] = review["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+
+        reviewer = users.find_one({"id": review["reviewer_id"]})
+
+        if not reviewer:
+            return jsonify({"message": "Reviewer not found"}), 404
+
+        review["reviewer"] = {"id": reviewer["id"], "username": reviewer["username"], "location": reviewer["location"]}
+    
+    return jsonify(reviews_list), 200
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

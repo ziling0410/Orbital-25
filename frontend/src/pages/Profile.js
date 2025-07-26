@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../App";
 import { CiMapPin } from "react-icons/ci";
+import { Rating } from "react-simple-star-rating";
 import "./Profile.css";
 
 function Profile() {
@@ -11,6 +12,7 @@ function Profile() {
 	const [rating, setRating] = useState(0);
 	const [totalReviews, setTotalReviews] = useState(0);
 	const [myListings, setMyListings] = useState([]);
+	const [reviews, setReviews] = useState([]);
     const [completedTradeNumber, setCompletedTradeNumber] = useState(0);
 	const navigate = useNavigate();
 
@@ -89,6 +91,27 @@ function Profile() {
 	}, [userId]);
 
 	useEffect(() => {
+		const fetchReviews = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-reviews?id=${userId}`);
+				if (response.ok) {
+					const reviewsData = await response.json();
+					setReviews(reviewsData);
+				} else {
+					console.error("Error loading reviews");
+				}
+			} catch (error) {
+				console.error("Network error loading reviews:", error);
+
+			}
+		};
+
+		if (userId) {
+			fetchReviews();
+		}
+	}, [userId]);
+
+	useEffect(() => {
 		const fetchRating = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-average-rating?id=${userId}`);
@@ -116,6 +139,22 @@ function Profile() {
 				<h3>wtt - {listing.have}</h3>
 				<img src={`${process.env.REACT_APP_BACKEND_URL}${listing.image_url}`} alt="Item" />
 				<h3>want - {listing.want}</h3>
+			</div>
+		)
+	};
+
+	const displayReview = (reviews) => {
+		return (
+			<div className="review-card">
+				<Rating
+					readOnly={true}
+					allowFraction={true}
+					initialValue={reviews.rating}
+					fillColor="#FFD700"
+					emptyColor="#888888"
+				/>
+				<p> | {reviews.reviewer.username} | {reviews.reviewer.location} | {reviews.created_at}</p>
+				<p>"{reviews.review}"</p>
 			</div>
 		)
 	};
@@ -151,6 +190,25 @@ function Profile() {
 						</div>
 					</div>
 				);
+			case "reviews":
+				return (
+					<div className="reviews">
+						<div className="reviews-box">
+							<div className="reviews-box-item">
+								{reviews[0] ? displayReview(reviews[0]) : null}
+							</div>
+						</div>
+						<div className="reviews-box">
+							<div className="reviews-box-item">
+								{reviews[1] ? displayReview(reviews[0]) : null}
+							</div>
+						</div><div className="reviews-box">
+							<div className="reviews-box-item">
+								{reviews[2] ? displayReview(reviews[0]) : null}
+							</div>
+						</div>
+					</div>
+				)
 			default:
 				return null;
 		}
@@ -183,11 +241,25 @@ function Profile() {
 							<CiMapPin />
 							<p>{userProfile.location}</p>
 						</div>
-						<p>Average rating: {rating} ({totalReviews} reviews)</p>
+						<p>Average rating: </p>
+						<Rating
+							readOnly={true}
+							allowFraction={true}
+							initialValue={rating}
+							fillColor="#FFD700"
+							emptyColor="#888888"
+						/>
+						<p>({totalReviews} reviews)</p>
 					</div>
 				</div>
 				<div className="profile-center-bottom">
 					<div className="profile-center-bottom-nav">
+						<button
+							className={`nav-tab ${activeTab === "reviews" ? "active" : ""}`}
+							onClick={() => setActiveTab("reviews")}
+						>
+							Reviews
+						</button>
 						<button
 							className={`nav-tab ${activeTab === "about" ? "active" : ""}`}
 							onClick={() => setActiveTab("about")}
@@ -202,6 +274,9 @@ function Profile() {
 						</button>
 					</div>
 					<div className="profile-center-bottom-tab-content">
+						<div className={`tab-pane ${activeTab === "reviews" ? "active" : ""}`}>
+							{renderTabContent()}
+						</div>
 						<div className={`tab-pane ${activeTab === "about" ? "active" : ""}`}>
                             {renderTabContent()}
 						</div>
