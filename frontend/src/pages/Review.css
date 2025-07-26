@@ -27,7 +27,7 @@
 .review-bottom {
 	margin-top: 20px;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	gap: 20px;
 }
 .add-button {

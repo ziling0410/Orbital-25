@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./chat.css";
+import "./Chat.css";
 
 function ChatWidget({
   users = [{ id: "u1", label: "User1" }, { id: "u2", label: "User2" }],
