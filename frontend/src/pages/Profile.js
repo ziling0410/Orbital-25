@@ -150,11 +150,12 @@ function Profile() {
 					<Rating
 						readOnly={true}
 						allowFraction={true}
-						initialValue={reviews.rating}
-						fillColor="#FFD700"
+						initialValue={rating}
+						disableFillHover={true}
+						fillColor="#000000"
 						emptyColor="#888888"
 					/>
-					<p> | {reviews.reviewer.username} | {reviews.reviewer.location} | {reviews.created_at}</p>
+					<p> | {reviews.reviewer.username} | {reviews.reviewer.location} | {new Date(reviews.created_at).toLocaleString()}</p>
 				</div>
 				<p>"{reviews.review}"</p>
 			</div>
@@ -243,7 +244,7 @@ function Profile() {
 								allowFraction={true}
 								initialValue={rating}
 								disableFillHover={true}
-								fillColor="#FFD700"
+								fillColor="#000000"
 								emptyColor="#888888"
 							/>
 							<p>({totalReviews} reviews)</p>

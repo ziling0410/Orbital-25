@@ -144,4 +144,8 @@
 }
 .review-card {
     background-color: #fcf6db;
+    width: 80%;
+    padding: 20px;
+    border-radius: 20px;
+    align-items: center;
 }
