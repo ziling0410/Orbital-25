@@ -62,16 +62,6 @@ function TradeHistory() {
 		fetchTradeHistory();
 	}, [userId, fetchTradeHistory]);
 
-	const displayListings = (listing) => {
-		return (
-			<div className="listings-card">
-				<h3>wtt - {listing.have}</h3>
-				<img src={`${process.env.REACT_APP_BACKEND_URL}${listing.image_url}`} alt="Item" />
-				<h3>want - {listing.want}</h3>
-			</div>
-		)
-	}
-
 	const handleHomeClick = () => {
 		navigate("/");
 	};

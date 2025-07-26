@@ -8,7 +8,6 @@ function AddListings() {
 	const [image, setImage] = useState(null);
 	const [want, setWant] = useState("");
 	const [preferences, setPreferences] = useState("");
-	const [message, setMessage] = useState("");
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
@@ -38,11 +37,11 @@ function AddListings() {
 		});
 		
 		if (response.ok) {
-			setMessage("Listing added successfully");
+			alert("Listing added successfully");
 			navigate("/get-listings");
 		} else {
 			const error = await response.json();
-			setMessage("Error: " + error.message);
+			alert("Error: " + error.message);
 		}
 	};
 	
@@ -133,8 +132,6 @@ function AddListings() {
 				event.preventDefault();
 				handleListing();
 			}}>Add</button>
-			<br />
-			<p>{message}</p>
 			<br />
 			<button className="add-button" onClick={() => navigate("/get-listings")}>Back to Listings</button>
 			<br />

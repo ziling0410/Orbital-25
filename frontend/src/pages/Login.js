@@ -6,7 +6,6 @@ import "./Login.css";
 function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [message, setMessage] = useState("");
 	
 	const navigate = useNavigate();
 
@@ -17,9 +16,9 @@ function Login() {
 		});
 		
 		if (error) {
-			setMessage("Login failed: " + error.message);
+			alert("Login failed: " + error.message);
 		} else {
-			setMessage("Login successful");
+			alert("Login successful");
 			navigate("/");
 		}
 	};
@@ -44,8 +43,6 @@ function Login() {
 			/>
 			<br />
 			<button className="login-button" onClick = {handleLogin}>Login</button>
-			<br />
-			<p>{message}</p>
 			<br />
 			<div className="signup-text">
 				<p>Don't have an account yet?</p>

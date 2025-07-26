@@ -10,7 +10,6 @@ function Register() {
     const [location, setLocation] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [message, setMessage] = useState("");
 	
 	const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ function Register() {
 		});
 
 		if (error) {
-			console.log("Registration failed: " + error.message);
+			alert("Registration failed: " + error.message);
 		}
 
 		const user = data.user;
@@ -46,7 +45,7 @@ function Register() {
 			});
 
 			if (response.ok) {
-				setMessage("Registration successful! Please check your mailbox for the confirmation email. If the link doesn't direct you back to this page, please come back to this page and refresh it to login.");
+				alert("Registration successful! Please check your mailbox for the confirmation email. If the link doesn't direct you back to this page, please come back to this page and refresh it to login.");
 				navigate("/");
 			} else {
 				const err = await response.text();
@@ -111,8 +110,6 @@ function Register() {
 			/>
 			<br />
 			<button className="register-button" onClick = {handleRegister}>Register</button>
-			<br />
-			<p>{message}</p>
 			<br />
 			<button className="register-button" onClick = {() => navigate("/")}>Back to Home</button>
 		</div>

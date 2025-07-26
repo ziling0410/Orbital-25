@@ -9,7 +9,6 @@ function Review() {
 	const [trade, setTrade] = useState(null);
 	const [review, setReview] = useState("");
 	const [rating, setRating] = useState(0);
-	const [message, setMessage] = useState("");
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
@@ -87,11 +86,11 @@ function Review() {
 		});
 
 		if (response.ok) {
-			setMessage("Review added successfully");
+			alert("Review added successfully");
 			navigate("/");
 		} else {
 			const error = await response.json();
-			setMessage("Error: " + error.message);
+			alert("Error: " + error.message);
 		}
 	};
 

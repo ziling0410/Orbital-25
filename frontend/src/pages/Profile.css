@@ -144,7 +144,6 @@
 }
 .review-card {
     display: flex;
-    flex-direction: row;
     justify-content: center;
     background-color: #fcf6db;
     width: 80%;
