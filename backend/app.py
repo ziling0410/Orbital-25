@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from operator import itemgetter
 import re
 from flask import Flask, render_template, request, jsonify, send_file
@@ -531,10 +534,6 @@ def get_reviews():
     return jsonify(reviews_list), 200
 
 if __name__ == "__main__":
-    import eventlet
-    import eventlet.wsgi
-    eventlet.monkey_patch()
-
     socketio.run(app, host="0.0.0.0", port=5000)
 
 @app.route("/chat/messages", methods=["GET"])
