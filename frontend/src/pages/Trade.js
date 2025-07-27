@@ -154,7 +154,7 @@ function Trade() {
 				<ChatWidget
 					userId={userId}
 					peerId={trade["userA_id"] === userId ? trade["userB_id"] : trade["userA_id"]}
-					wsUrl="wss://orbital-25-kjmn.onrender.com/chat"
+					wsUrl="wss://orbital-25-kjmn.onrender.com"
 				/>
 				<div className="trade-center-left">
 					<div className="trade-center-left-box">
