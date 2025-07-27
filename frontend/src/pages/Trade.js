@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../App";
 import React, { useEffect, useState } from "react";
 import "./Trade.css";
+import ChatWidget from "./Chat.js";
 
 function Trade() {
 	const { tradeId } = useParams();
@@ -150,6 +151,11 @@ function Trade() {
 				</div>
 			</div>
 			<div className="trade-center">
+				<ChatWidget
+					userId={userId}
+					peerId={trade["userA_id"] === userId ? trade["userB_id"] : trade["userA_id"]}
+					wsUrl="wss://orbital-25-kjmn.onrender.com/chat"
+				/>
 				<div className="trade-center-left">
 					<div className="trade-center-left-box">
 						{userId === trade["userA_id"] ? (
