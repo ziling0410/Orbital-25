@@ -33,7 +33,6 @@ fs = gridfs.GridFS(db)
 messages = db["messages"]
 
 def get_room_name(user_a, user_b):
-    # Create a stable room name for any pair of users (sorted to avoid duplication)
     return "_".join(sorted([user_a, user_b]))
 
 @socketio.on('connect')
