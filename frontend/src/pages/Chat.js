@@ -92,6 +92,10 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
 
     const handleClear = () => setMessages([]);
 
+    if (!peerProfile) {
+        return null;
+    }
+
     return (
         <div className="chat-widget" role="region" aria-label={`Chat with user ${peerProfile.username}`}>
             <div className="chat-widget__header">
