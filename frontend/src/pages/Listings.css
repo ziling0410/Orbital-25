@@ -40,56 +40,47 @@
 	flex: 0 0 80%;
 	display: flex;
 	flex-direction: row;
+	margin-left: 5%;
+	font-size: 20px;
 }
-.listings-center-left, .listings-center-right {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-	height: 100%;
+.listings-table {
+	width: 100;
+	border-collapse: collapse;
+	table-layout: fixed;
 }
-.listings-center-left-box, .listings-center-right-box {
-    background-color: #f1ebe5;
-	height: 80%;
-	width: 60%;
-	padding: 20px 30px;
-    border-radius: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.listings-table th {
+	padding: 10px;
+	vertical-align: top;
+	text-align: center;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	white-space: normal;
+	font-size: 25px;
 }
-.prev-button, .next-button {
-	flex: 0 0 10%;
-	display: flex;
-	justify-content: flex-start;
-	padding: 20px;
+.listings-table td {
+	padding: 10px;
+	vertical-align: top;
+	text-align: center;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	white-space: normal;
+	cursor: pointer;
+	font-size: 20px;
 }
-.listings-center-left-bottom {
-	position: relative;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: 10px;
+.listings-col-user {
+	width: 15%;
 }
-.listings-center-left-bottom-nav {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+.listings-col-item {
+	width: 20%;
 }
-.listings-center-left-bottom-like {
-	position: absolute;
-	top: 50%;
-	right: 10%;
-	transform: translateY(-50%);
+.listings-col-image {
+	width: 20%;
 }
-.listings-center-center {
-	flex: 1;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.listings-col-preferences {
+	width: 15%;
+}
+.listings-col-like {
+	width: 10%;
 }
 .listings-bottom {
 	flex: 1;
@@ -100,12 +91,6 @@
 	align-items: center;
 	padding: 20px;
 }
-.listings-card {
-    font-family: 'Cormorant Garamond', serif;
-	font-size: 20px;
-	text-align: center;
-	width: 80%;
-}
 .function-button {
     background-color: #f1ebe5;
     color: black;
@@ -114,14 +99,6 @@
     font-size: 15px;
     cursor: pointer;
     border-radius: 10px;
-}
-.nav-button {
-	width: 50px;
-	height: 50px;
-	border-radius: 50%;
-	font-size: 30px;
-	background-color: #f1ebe5;
-	cursor: pointer;
 }
 .like-button {
 	width: 50px;
