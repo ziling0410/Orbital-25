@@ -468,6 +468,8 @@ def review():
     trade_id = data.get("trade_id")
 
     trade = completed_trades.find_one({"_id": ObjectId(trade_id)})
+    if not trade:
+        trade = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
     reviewed_id = trade["userA_id"] if trade["userB_id"] == reviewer_id else trade["userB_id"]
 
     reviews.insert_one({
