@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
-import "./TradeHistory.css";
 
-function TradeHistory() {
+function OngoingTrades() {
 	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
-	const [tradeHistory, setTradeHistory] = useState([]);
+	const [ongoingTrades, setOngoingTrades] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -52,15 +51,15 @@ function TradeHistory() {
 		}
 	}, [userId]);
 
-	const fetchTradeHistory = useCallback(async () => {
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/trade-history?id=${userId}`);
+	const fetchOngoingTrades = useCallback(async () => {
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-ongoing-trades?id=${userId}`);
 		const data = await response.json();
-		setTradeHistory(data);
+		setOngoingTrades(data);
 	}, [userId]);
 
 	useEffect(() => {
-		fetchTradeHistory();
-	}, [userId, fetchTradeHistory]);
+		fetchOngoingTrades();
+	}, [userId, fetchOngoingTrades]);
 
 	const handleHomeClick = () => {
 		navigate("/");
@@ -95,8 +94,8 @@ function TradeHistory() {
 				</div>
 			</div>
 			<div className="trade-history-center">
-				{tradeHistory.length === 0 ? (
-					<p>No completed trades yet.</p>
+				{ongoingTrades.length === 0 ? (
+					<p>No ongoing trades.</p>
 				) : (
 					<table className="trade-history-table">
 						<thead>
@@ -108,7 +107,7 @@ function TradeHistory() {
 							</tr>
 						</thead>
 						<tbody>
-							{tradeHistory.map((trade) => (
+							{ongoingTrades.map((trade) => (
 								<tr key={trade._id}>
 									<td className="trade-history-col-user" onClick={() => navigate(`/profile/${trade.user_id}`)}>{trade.other_user}</td>
 									<td className="trade-history-col-item" onClick={() => navigate(`/trade/${trade._id}`)}>{trade.own_item}</td>
@@ -127,4 +126,4 @@ function TradeHistory() {
 	);
 }
 
-export default TradeHistory;
+export default OngoingTrades;

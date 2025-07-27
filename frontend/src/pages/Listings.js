@@ -157,7 +157,7 @@ function Listings() {
 					<tbody>
 						{otherListings.map((trade) => (
 							<tr key={trade._id}>
-								<td className="listings-col-user" onClick={navigate(`/profile/${trade.user_id}`)}>{trade.username}</td>
+								<td className="listings-col-user" onClick={() => navigate(`/profile/${trade.user_id}`)}>{trade.username}</td>
 								<td className="listings-col-item">{trade.have}</td>
 								<td className="listings-col-image"><img src={`${process.env.REACT_APP_BACKEND_URL}${trade.image_url}`} alt="Item" /></td>
 								<td className="listing-col-item">{trade.want}</td>

@@ -16,6 +16,7 @@ import NotificationPollerWrapper from "./pages/NotificationPollerWrapper";
 import Notifications from "./pages/Notifications.js";
 import Review from "./pages/Review.js";
 import ChatWidget from "./pages/Chat.js";
+import OngoingTrades from "./pages/OngoingTrades.js";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
@@ -60,6 +61,7 @@ function App() {
 					<Route path = "/profile/:userId" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
 					<Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />
+					<Route path="/ongoing-trades" element={session ? <OngoingTrades userId={userId} /> : <Navigate to="/login" />} />
                     <Route path="/trade-history" element={session ? <TradeHistory userId={userId} /> : <Navigate to="/login" />} />
 					<Route path="/review/:tradeId" element={session ? <Review userId={userId} /> : <Navigate to="/login" />} />
 					<Route path="/chat" element={session ? (<ChatWidget storageKey={`chat_${userId}`} users={[ { id: userId, label: "You" }, { id: "support", label: "Support" }, { id: userId, label: "You" }, { id: "support", label: "Support" } ]} />) : (<Navigate to="/login" />) } />

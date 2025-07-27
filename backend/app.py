@@ -155,6 +155,32 @@ def get_trade_history():
 
     return jsonify(trade_history), 200
 
+@app.route("/get-ongoing-trades", methods = ["GET"])
+def get_ongoing_trades():
+    user_id = request.args.get("id")
+    query = {"$or": [{"userA_id": user_id}, {"userB_id": user_id}]}
+    
+    ongoing_trades_list = list(ongoing_trades.find(query).sort("created_at", DESCENDING))
+
+    for trade in ongoing_trades_list:
+        trade["_id"] = str(trade["_id"])
+        trade["image_url"] = f'/image/{str(trade["haveImageId"])}'
+        trade["haveImageId"] = str(trade["haveImageId"])
+        if trade["userA_id"] == user_id:
+            other_user = users.find_one({"id": trade["userB_id"]})
+            own_item = trade["userA_have"]
+            other_item = trade["userB_have"]
+        else:
+            other_user = users.find_one({"id": trade["userA_id"]})
+            own_item = trade["userB_have"]
+            other_item = trade["userA_have"]
+        
+        trade["other_user"] = other_user["username"]
+        trade["own_item"] = own_item
+        trade["other_item"] = other_item
+
+    return jsonify(ongoing_trades_list), 200
+
 @app.route("/add-listings", methods = ["POST"])
 def add_listings():
     data = request.form

@@ -68,6 +68,14 @@ function Home() {
         }
     };
 
+    const handleOngoingTrades = async () => {
+        if (!userId) {
+            navigate("/login");
+        } else {
+            navigate("/ongoing-trades");
+        }
+    };
+
     const handleTradeHistory = async () => {
         if (!userId) {
             navigate("/login");
@@ -170,6 +178,7 @@ function Home() {
                     <div className="home-bottom-right-box">
                         <button className="trade" onClick={handleTrade}>Trades</button>
                         <button className="trade" onClick={handleNotifications}>Notifications</button>
+                        <button className="trade" onClick={handleOngoingTrades}>Ongoing Trades</button>
                         <button className="trade" onClick={handleTradeHistory}>Trade History</button>
                         <button className="trade" onClick={handleChat}>Chat</button>
                     </div>
