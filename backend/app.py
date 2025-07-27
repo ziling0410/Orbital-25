@@ -24,6 +24,7 @@ notifications = db["notifications"]
 completed_trades = db["completed_trades"]
 reviews = db["reviews"]
 fs = gridfs.GridFS(db)
+messages = db["messages"]
 
 @app.route("/save-username", methods = ["POST"])
 def save_username():
@@ -462,3 +463,53 @@ def get_reviews():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+@app.route("/chat/messages", methods=["GET"])
+def get_chat_messages():
+    user = request.args.get("user")
+    peer = request.args.get("peer")
+
+    if not user or not peer:
+        return jsonify({"error": "Missing 'user' or 'peer' parameter"}), 400
+
+    chat_messages = list(
+        messages.find(
+            {
+                "$or": [
+                    {"senderId": user, "recipientId": peer},
+                    {"senderId": peer, "recipientId": user},
+                ]
+            }
+        ).sort("createdAt", 1)  # Sort ascending by creation time
+    )
+
+    for msg in chat_messages:
+        msg["_id"] = str(msg["_id"])
+        msg["createdAt"] = msg["createdAt"].strftime("%Y-%m-%d %H:%M:%S")
+
+    return jsonify(chat_messages), 200
+
+
+@app.route("/chat/send", methods=["POST"])
+def send_chat_message():
+    data = request.json
+    sender = data.get("sender")
+    recipient = data.get("recipient")
+    text = data.get("text")
+
+    if not sender or not recipient or not text:
+        return jsonify({"error": "Missing 'sender', 'recipient', or 'text' in request"}), 400
+
+    message_doc = {
+        "senderId": sender,
+        "recipientId": recipient,
+        "text": text,
+        "createdAt": datetime.now(),
+    }
+
+    result = messages.insert_one(message_doc)
+
+    if result.inserted_id:
+        return jsonify({"message": "Message sent successfully", "id": str(result.inserted_id)}), 201
+    else:
+        return jsonify({"error": "Failed to send message"}), 500

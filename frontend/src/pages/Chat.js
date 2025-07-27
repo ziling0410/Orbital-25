@@ -1,78 +1,86 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./Chat.css";
+import "./Chat.css";  
 
 function ChatWidget({
   userId,
   peerId,
-  apiBaseUrl,
-  header = "Chat",
+  wsUrl,
+  header = "Chat"
 }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const ws = useRef(null);
   const messagesEl = useRef(null);
+  const inputEl = useRef(null);
 
-  // Fetch chat history on mount or if user/peer changes
   useEffect(() => {
-    if (!userId || !peerId) return;
-    setLoading(true);
-    fetch(
-      `${apiBaseUrl}/chat/messages?user=${encodeURIComponent(
-        userId
-      )}&peer=${encodeURIComponent(peerId)}`
-    )
-      .then((res) => res.json())
-      .then((msgs) => setMessages(msgs || []))
-      .catch(() => setMessages([]))
-      .finally(() => setLoading(false));
-  }, [userId, peerId, apiBaseUrl]);
+    if (!userId || !peerId || !wsUrl) return;
+    ws.current = new WebSocket(wsUrl);
 
-  // Scroll to bottom on new message
+    ws.current.onopen = () => {
+      setConnected(true);
+      ws.current.send(JSON.stringify({ type: "join", userId, peerId }));
+    };
+
+    ws.current.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "chat-message") {
+          setMessages(prev => [...prev, msg.data]);
+        } else if (msg.type === "history") {
+          setMessages(msg.data || []);
+        }
+      } catch (err) {
+      }
+    };
+
+    ws.current.onclose = () => {
+      setConnected(false);
+    };
+
+    ws.current.onerror = (err) => {
+      setConnected(false);
+    };
+
+    return () => {
+      ws.current && ws.current.close();
+    };
+  }, [userId, peerId, wsUrl]);
+
   useEffect(() => {
     if (messagesEl.current) {
       messagesEl.current.scrollTop = messagesEl.current.scrollHeight;
     }
   }, [messages]);
 
-  // Send new message via API
-  const handleSend = async (e) => {
+  const handleSend = (e) => {
     e.preventDefault();
     const text = input.trim();
-    if (!text) return;
+    if (!text || !connected || !ws.current) return;
     const msg = { sender: userId, recipient: peerId, text };
+    ws.current.send(JSON.stringify({ type: "chat-message", data: msg }));
     setInput("");
-    // Optionally add optimistically:
-    setMessages((prev) => [...prev, { ...msg }]);
-    await fetch(`${apiBaseUrl}/chat/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(msg),
-    });
-    // Optionally, reload from server for full trust:
-    // You could remove the following line for latency, but safest is rerun useEffect.
-    fetch(
-      `${apiBaseUrl}/chat/messages?user=${encodeURIComponent(
-        userId
-      )}&peer=${encodeURIComponent(peerId)}`
-    )
-      .then((res) => res.json())
-      .then((msgs) => setMessages(msgs || []));
   };
 
-  // Optionally: implement an API that supports clearing chat
-  const handleClear = () => {
-    setMessages([]);
-    // Optionally call your backend API to clear chat history!
-  };
+  const handleClear = () => setMessages([]);
 
   return (
-    <div className="chat-widget">
+    <div className="chat-widget" role="region" aria-label={`Chat with user ${peerId}`}>
       <div className="chat-widget__header">
-        {header} with {peerId}
+        {header} with {peerId} {connected ? "🟢" : "🔴"}
       </div>
-      <div className="chat-widget__messages" ref={messagesEl}>
-        {loading ? (
-          <div style={{ textAlign: "center", color: "#888" }}>Loading…</div>
+      <div
+        className="chat-widget__messages"
+        ref={messagesEl}
+        tabIndex={-1}
+        aria-live="polite"
+        aria-relevant="additions"
+      >
+        {messages.length === 0 ? (
+          <div style={{ textAlign: "center", color: "#888" }}>
+            No messages yet. Say hello!
+          </div>
         ) : (
           messages.map((msg, i) => (
             <div
@@ -83,25 +91,25 @@ function ChatWidget({
                   ? "chat-widget__message--out"
                   : "chat-widget__message--in")
               }
+              aria-label={`${msg.sender === userId ? "You" : `User ${msg.sender}`} said: ${msg.text}`}
             >
               {msg.text}
             </div>
           ))
         )}
       </div>
-      <form
-        className="chat-widget__form"
-        autoComplete="off"
-        onSubmit={handleSend}
-      >
+      <form className="chat-widget__form" autoComplete="off" onSubmit={handleSend}>
         <input
+          ref={inputEl}
           className="chat-widget__input"
           type="text"
-          value={input}
           placeholder="Type a message…"
+          value={input}
           onChange={(e) => setInput(e.target.value)}
+          disabled={!connected}
+          aria-label="Type your message"
         />
-        <button className="chat-widget__btn" type="submit">
+        <button className="chat-widget__btn" type="submit" disabled={!connected || !input.trim()}>
           Send
         </button>
       </form>
@@ -109,6 +117,7 @@ function ChatWidget({
         className="chat-widget__clear"
         type="button"
         onClick={handleClear}
+        aria-label="Clear chat messages"
       >
         Clear Chat
       </button>
