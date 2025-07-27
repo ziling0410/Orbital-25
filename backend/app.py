@@ -216,12 +216,15 @@ def get_trade_history():
             other_user = users.find_one({"id": trade["userB_id"]})
             own_item = trade["userA_have"]
             other_item = trade["userB_have"]
-        else:
+        elif trade["userB_id"] == user_id:
             other_user = users.find_one({"id": trade["userA_id"]})
             own_item = trade["userB_have"]
             other_item = trade["userA_have"]
         
-        trade["other_user"] = other_user["username"]
+        if other_user:
+            trade["other_user"] = other_user["username"]
+        else: 
+            trade["other_user"] = "Unknown user"
         trade["own_item"] = own_item
         trade["other_item"] = other_item
 

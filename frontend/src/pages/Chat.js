@@ -6,6 +6,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [connected, setConnected] = useState(false);
+    const [peerProfile, setPeerProfile] = useState(null);
     const socketRef = useRef(null);
     const messagesEl = useRef(null);
 
@@ -55,6 +56,30 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
         }
     }, [messages]);
 
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: userId })
+                });
+                if (response.ok) {
+                    const profileData = await response.json();
+                    setPeerProfile(profileData);
+                } else {
+                    console.error("Error loading profile");
+                }
+            } catch (error) {
+                console.error("Network error loading profile:", error);
+            }
+        };
+
+        if (userId) {
+            fetchProfile();
+        }
+    }, [userId]);
+
     const handleSend = (e) => {
         e.preventDefault();
         const text = input.trim();
@@ -68,7 +93,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
     const handleClear = () => setMessages([]);
 
     return (
-        <div className="chat-widget" role="region" aria-label={`Chat with user ${peerId}`}>
+        <div className="chat-widget" role="region" aria-label={`Chat with user ${peerProfile.username}`}>
             <div className="chat-widget__header">
                 {header} with {peerId} {connected ? "🟢" : "🔴"}
             </div>
