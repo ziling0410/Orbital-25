@@ -69,16 +69,6 @@ function Listings() {
 	useEffect(() => {
 		fetchListings();
 	}, [userId, fetchListings]);
-
-	const displayListings = (listing) => {
-		return (
-			<div className="listings-card">
-				<h3>wtt - {listing.have}</h3>
-				<img src={`${process.env.REACT_APP_BACKEND_URL}${listing.image_url}`} alt="Item" />
-				<h3>want - {listing.want}</h3>
-			</div>
-		)
-	}
 	
 	const handleHomeClick = () => {
 		navigate("/");
@@ -88,7 +78,7 @@ function Listings() {
 		if (!userId) {
 			navigate("/login");
 		} else {
-			navigate("/profile");
+			navigate(`/profile/${userId}`);
 		}
 	};
 
@@ -153,37 +143,30 @@ function Listings() {
 				</div>
 			</div>
 			<div className="listings-center">
-				<div className="listings-center-left">
-					<div className="listings-center-left-box">
-						<div className="prev-button">
-							<button className="nav-button" onClick={() => setOtherIndex(i => Math.max(i - 1, 0))}>˄</button>
-						</div>
-						<div className="listings-center-center">
-							{otherListings.length > 0 && displayListings(otherListings[otherIndex])}
-						</div>
-						<div className="listings-center-left-bottom">
-							<div className="listings-center-left-bottom-nav">
-								<button className="nav-button" onClick={() => setOtherIndex(i => Math.min(i + 1, otherListings.length - 1))}>˅</button>
-							</div>
-							<div className="listings-center-left-bottom-like">
-								<button className="like-button" onClick={handleLike}><FaHeart /></button>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="listings-center-right">
-					<div className="listings-center-right-box">
-						<div className="prev-button">
-							<button className="nav-button" onClick={() => setMyIndex(i => Math.max(i - 1, 0))}>˄</button>
-						</div>
-						<div className="listings-center-center">
-							{myListings.length > 0 && displayListings(myListings[myIndex])}
-						</div>
-						<div className="next-button">
-							<button className="nav-button" onClick={() => setMyIndex(i => Math.min(i + 1, myListings.length - 1))}>˅</button>
-						</div>
-					</div>
-				</div>
+				<table className="listings-table">
+					<thead>
+						<tr>
+							<th className="listings-col-user">User</th>
+							<th className="listings-col-item">Item To Trade</th>
+							<th className="listings-col-image">Image</th>
+							<th className="listings-col-item">Item Looking For</th>
+							<th className="listings-col-preferences">Preferences</th>
+							<th className="listings-col-like">Initiate Trade</th>
+						</tr>
+					</thead>
+					<tbody>
+						{otherListings.map((trade) => (
+							<tr key={trade._id}>
+								<td className="listings-col-user" onClick={navigate(`/profile/${trade.user_id}`)}>{trade.username}</td>
+								<td className="listings-col-item">{trade.have}</td>
+								<td className="listings-col-image"><img src={`${process.env.REACT_APP_BACKEND_URL}${trade.image_url}`} alt="Item" /></td>
+								<td className="listing-col-item">{trade.want}</td>
+								<td className="listings-col-preferences">{trade.preferences}</td>
+								<td className="listings-col-like"><button className="like-button" onClick={handleLike}><FaHeart /></button></td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
 			<div className="listings-bottom">
 				<button className="function-button" onClick={() => navigate("/add-listings")}>Add a Listing</button>

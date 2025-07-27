@@ -57,7 +57,7 @@ function App() {
 					<Route path = "/register" element = {<Register />} />
 					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
-					<Route path = "/profile" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
+					<Route path = "/profile/:userId" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
 					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
 					<Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />
                     <Route path="/trade-history" element={session ? <TradeHistory userId={userId} /> : <Navigate to="/login" />} />

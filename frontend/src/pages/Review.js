@@ -103,7 +103,7 @@ function Review() {
 		if (!userId) {
 			navigate("/login");
 		} else {
-			navigate("/profile");
+			navigate(`/profile/${userId}`);
 		}
 	};
 

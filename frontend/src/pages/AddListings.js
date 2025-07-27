@@ -54,7 +54,7 @@ function AddListings() {
 		if (!userId) {
 			navigate("/login");
 		} else {
-			navigate("/profile");
+			navigate(`/profile/${userId}`);
 		}
 	};
 

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../App";
 import { CiMapPin } from "react-icons/ci";
 import { Rating } from "react-simple-star-rating";
 import "./Profile.css";
 
 function Profile() {
+	const { userId } = useParams();
 	const [activeTab, setActiveTab] = useState("about");
-	const [userId, setUserId] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const [rating, setRating] = useState(0);
 	const [totalReviews, setTotalReviews] = useState(0);
@@ -15,16 +15,6 @@ function Profile() {
 	const [reviews, setReviews] = useState([]);
     const [completedTradeNumber, setCompletedTradeNumber] = useState(0);
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
 
 	useEffect(() => {
 		const fetchProfile = async () => {

@@ -115,6 +115,8 @@ def get_listings():
 
     listings = list(trade_listings.find(query).sort("created_at", DESCENDING))
     for listing in listings:
+        user = users.find_one({"id": listing["user_id"]})
+        listing["username"] = user["username"] if user else "Unknown User"
         listing["_id"] = str(listing["_id"])
         listing["image_url"] = f'/image/{str(listing["haveImageId"])}'
         listing["haveImageId"] = str(listing["haveImageId"])
