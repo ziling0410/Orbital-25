@@ -12,37 +12,34 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
     useEffect(() => {
         if (!userId || !peerId || !wsUrl) return;
 
-        // Initialize Socket.IO connection
         socketRef.current = io(wsUrl, {
             transports: ["websocket"],
         });
 
-        // On connect
         socketRef.current.on("connect", () => {
+            console.log("Connected to socket server"); // <-- Check this console
             setConnected(true);
-            // Join the chat room for these two users
             socketRef.current.emit("join", { userId, peerId });
         });
 
-        // Receive chat history
         socketRef.current.on("history", (history) => {
             setMessages(history || []);
         });
 
-        // Receive new chat messages
         socketRef.current.on("chat-message", (msg) => {
             setMessages((prev) => [...prev, msg]);
         });
 
         socketRef.current.on("disconnect", () => {
+            console.log("Disconnected from socket server");
             setConnected(false);
         });
 
-        socketRef.current.on("connect_error", () => {
+        socketRef.current.on("connect_error", (error) => {
+            console.error("Socket connection error:", error);
             setConnected(false);
         });
 
-        // Clean up on unmount
         return () => {
             if (socketRef.current) {
                 socketRef.current.disconnect();
@@ -50,6 +47,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
             }
         };
     }, [userId, peerId, wsUrl]);
+
 
     useEffect(() => {
         if (messagesEl.current) {
