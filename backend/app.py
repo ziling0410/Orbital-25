@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, jsonify, send_file
 from pymongo import MongoClient, DESCENDING
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
+from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 import gridfs
 from bson import ObjectId
@@ -13,6 +14,8 @@ import os
 app = Flask(__name__, template_folder = "./templates")
 CORS(app)
 bcrypt = Bcrypt(app)
+
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 mongo_url = os.environ.get("MONGODB_URI")
 client = MongoClient(mongo_url)
@@ -25,6 +28,72 @@ completed_trades = db["completed_trades"]
 reviews = db["reviews"]
 fs = gridfs.GridFS(db)
 messages = db["messages"]
+
+def get_room_name(user_a, user_b):
+    # Create a stable room name for any pair of users (sorted to avoid duplication)
+    return "_".join(sorted([user_a, user_b]))
+
+@socketio.on('connect')
+def handle_connect():
+    print(f"Client connected: {request.sid}")
+
+@socketio.on('join')
+def handle_join(data):
+    user_id = data.get('userId')
+    peer_id = data.get('peerId')
+    if not user_id or not peer_id:
+        return
+    room = get_room_name(user_id, peer_id)
+    join_room(room)
+    print(f"User {user_id} joined room {room}")
+    
+    # Optionally: send previous messages from your DB to the client
+    chat_msgs = list(messages.find({
+        "$or": [
+            {"senderId": user_id, "recipientId": peer_id},
+            {"senderId": peer_id, "recipientId": user_id}
+        ]
+    }).sort("createdAt", 1))
+    # Format the messages before sending
+    history = [{
+        "sender": msg["senderId"],
+        "recipient": msg["recipientId"],
+        "text": msg["text"],
+        "createdAt": msg["createdAt"].strftime("%Y-%m-%d %H:%M:%S")
+    } for msg in chat_msgs]
+    emit('history', history)
+
+@socketio.on('chat-message')
+def handle_chat_message(data):
+    sender = data.get('sender')
+    recipient = data.get('recipient')
+    text = data.get('text')
+    if not sender or not recipient or not text:
+        return
+
+    room = get_room_name(sender, recipient)
+
+    # Save the message in MongoDB
+    messages.insert_one({
+        "senderId": sender,
+        "recipientId": recipient,
+        "text": text,
+        "createdAt": datetime.now(),
+    })
+
+    message = {
+        "sender": sender,
+        "recipient": recipient,
+        "text": text,
+        "createdAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    # Broadcast message to all clients in the room
+    emit('chat-message', message, room=room)
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print(f"Client disconnected: {request.sid}")
 
 @app.route("/save-username", methods = ["POST"])
 def save_username():
@@ -462,7 +531,11 @@ def get_reviews():
     return jsonify(reviews_list), 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    import eventlet
+    import eventlet.wsgi
+    eventlet.monkey_patch()
+
+    socketio.run(app, host="0.0.0.0", port=5000)
 
 @app.route("/chat/messages", methods=["GET"])
 def get_chat_messages():
