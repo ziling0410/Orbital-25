@@ -2,23 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import SearchBar from "./SearchBar";
-import { supabase } from "../App";
 
-function Home() {
-    const [userId, setUserId] = useState(null);
+function Home({userId: propUserId}) {
+    const [userId, setUserId] = useState(propUserId);
     const [userProfile, setUserProfile] = useState(null);
     const [searchInput, setSearchInput] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserId(user.id);
-            }
-        };
-        getUser();
-    }, []);
+        if (propUserId) {
+            setUserId(propUserId);
+        }
+    }, [propUserId]);
 
     useEffect(() => {
         const fetchProfile = async () => {

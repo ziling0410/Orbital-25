@@ -53,7 +53,7 @@ function App() {
 			<BrowserRouter>
 				<NotificationPollerWrapper userId={userId} />
 				<Routes>
-					<Route path = "/" element = {<Home />} />
+					<Route path="/" element={<Home userId={userId} />} />
 					<Route path = "/login" element = {<Login />} />
 					<Route path = "/register" element = {<Register />} />
 					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
