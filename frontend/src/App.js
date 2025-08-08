@@ -56,15 +56,15 @@ function App() {
 					<Route path="/" element={<Home userId={userId} />} />
 					<Route path = "/login" element = {<Login />} />
 					<Route path = "/register" element = {<Register />} />
-					<Route path = "/get-listings" element = {session ? <Listings user = {session.user} /> : <Navigate to = "/login" />} />
-					<Route path = "/add-listings" element = {session ? <AddListings user = {session.user} /> : <Navigate to = "/login" />} />
-					<Route path = "/profile/:userId" element = {session ? <Profile user = {session.user} /> : <Navigate to = "/login" />} />
-					<Route path="/trade/:tradeId" element={session ? <Trade user={session.user} /> : <Navigate to="/login" />} />
-					<Route path="/notifications" element={session ? <Notifications userId={userId} /> : <Navigate to="/login" />} />
-					<Route path="/ongoing-trades" element={session ? <OngoingTrades userId={userId} /> : <Navigate to="/login" />} />
-                    <Route path="/trade-history" element={session ? <TradeHistory userId={userId} /> : <Navigate to="/login" />} />
-					<Route path="/review/:tradeId" element={session ? <Review userId={userId} /> : <Navigate to="/login" />} />
-					<Route path="/chat" element={session ? (<ChatWidget storageKey={`chat_${userId}`} users={[ { id: userId, label: "You" }, { id: "support", label: "Support" }, { id: userId, label: "You" }, { id: "support", label: "Support" } ]} />) : (<Navigate to="/login" />) } />
+					<Route path = "/get-listings" element = {session ? <Listings userId = {userId} /> : <Navigate to = "/login" />} />
+					<Route path = "/add-listings" element = {session ? <AddListings userId = {userId} /> : <Navigate to = "/login" />} />
+					<Route path = "/profile/:userId" element = {session ? <Profile /> : <Navigate to = "/login" />} />
+					<Route path = "/trade/:tradeId" element = {session ? <Trade userId = {userId} /> : <Navigate to="/login" />} />
+					<Route path = "/notifications" element = {session ? <Notifications userId = {userId} /> : <Navigate to="/login" />} />
+					<Route path = "/ongoing-trades" element = {session ? <OngoingTrades userId = {userId} /> : <Navigate to="/login" />} />
+                    <Route path = "/trade-history" element = {session ? <TradeHistory userId = {userId} /> : <Navigate to="/login" />} />
+					<Route path = "/review/:tradeId" element = {session ? <Review userId = {userId} /> : <Navigate to="/login" />} />
+					<Route path = "/chat" element = {session ? (<ChatWidget storageKey = {`chat_${userId}`} users = {[ { id: userId, label: "You" }, { id: "support", label: "Support" }, { id: userId, label: "You" }, { id: "support", label: "Support" } ]} />) : (<Navigate to="/login" />) } />
 				</Routes>
 			</BrowserRouter>
 			<ToastContainer position="top-right" autoClose={5000} />

@@ -3,29 +3,17 @@ import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 import "./TradeHistory.css";
 
-function TradeHistory() {
-	const [userId, setUserId] = useState(null);
+function TradeHistory({userId: propUserId}) {
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const [tradeHistory, setTradeHistory] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { session }, error } = await supabase.auth.getSession();
-			if (error) {
-				console.error("Error getting session:", error);
-				return;
-			}
-			if (session?.user) {
-				setUserId(session.user.id);
-				console.log("Set user ID from session:", session.user.id);
-			} else {
-				console.log("No user session found");
-			}
-		};
-		getUser();
-	}, []);
-
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {

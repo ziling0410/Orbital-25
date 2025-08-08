@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from "../App";
 import { useNavigate } from 'react-router-dom';
 import "./Notifications.css";
 
-function Notifications() {
+function Notifications({userId: propUserId}) {
     const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
-	const [userId, setUserId] = useState(null);
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {

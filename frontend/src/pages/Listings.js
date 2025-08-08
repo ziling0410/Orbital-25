@@ -5,32 +5,19 @@ import { FaHeart } from "react-icons/fa";
 import SearchBar from "./SearchBar";
 import "./Listings.css";
 
-function Listings() {
-	const [userId, setUserId] = useState(null);
+function Listings({userId: propUserId}) {
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
-	const [myListings, setMyListings] = useState([]);
 	const [otherListings, setOtherListings] = useState([]);
-	const [myIndex, setMyIndex] = useState(0);
     const [otherIndex, setOtherIndex] = useState(0);
 	const [searchInput, setSearchInput] = useState("");
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { session }, error } = await supabase.auth.getSession();
-			if (error) {
-				console.error("Error getting session:", error);
-				return;
-			}
-			if (session?.user) {
-				setUserId(session.user.id);
-				console.log("Set user ID from session:", session.user.id);
-			} else {
-				console.log("No user session found");
-			}
-		};
-		getUser();
-	}, []);
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {
@@ -59,10 +46,7 @@ function Listings() {
 
 	const fetchListings = useCallback(async () => {
 		const responseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?excludeId=${userId}`);
-		const responseSelf = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?id=${userId}`);
 		const dataOthers = await responseOthers.json();
-		const dataSelf = await responseSelf.json();
-		setMyListings(dataSelf);
 		setOtherListings(dataOthers);
 	}, [userId]);
 
@@ -89,11 +73,8 @@ function Listings() {
 
 	const handleSearch = async () => {
 		const searchResponseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
-		const searchResponseSelf = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&id=${userId}`);
 		const searchDataOthers = await searchResponseOthers.json();
-		const searchDataSelf = await searchResponseSelf.json();
 		setOtherListings(searchDataOthers);
-		setMyListings(searchDataSelf);
 	};
 
 	const handleClearSearch = () => {

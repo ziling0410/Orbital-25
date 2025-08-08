@@ -2,29 +2,17 @@ import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 
-function OngoingTrades() {
-	const [userId, setUserId] = useState(null);
+function OngoingTrades({userId: propUserId}) {
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const [ongoingTrades, setOngoingTrades] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { session }, error } = await supabase.auth.getSession();
-			if (error) {
-				console.error("Error getting session:", error);
-				return;
-			}
-			if (session?.user) {
-				setUserId(session.user.id);
-				console.log("Set user ID from session:", session.user.id);
-			} else {
-				console.log("No user session found");
-			}
-		};
-		getUser();
-	}, []);
-
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {

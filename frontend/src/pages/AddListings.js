@@ -3,24 +3,20 @@ import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 import "./AddListings.css";
 
-function AddListings() {
+function AddListings({userId: propUserId}) {
 	const [have, setHave] = useState("");
 	const [image, setImage] = useState(null);
 	const [want, setWant] = useState("");
 	const [preferences, setPreferences] = useState("");
-	const [userId, setUserId] = useState(null);
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
 	
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 	
 	const handleListing = async () => {
 		

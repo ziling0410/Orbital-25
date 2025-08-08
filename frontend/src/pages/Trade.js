@@ -1,26 +1,20 @@
-
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "../App";
 import React, { useEffect, useState } from "react";
 import "./Trade.css";
 import ChatWidget from "./Chat.js";
 
-function Trade() {
+function Trade({userId: propUserId}) {
 	const { tradeId } = useParams();
 	const [trade, setTrade] = useState(null);
-	const [userId, setUserId] = useState(null);
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {

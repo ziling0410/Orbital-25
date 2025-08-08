@@ -4,24 +4,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
 import "./Review.css";
 
-function Review() {
+function Review({userId: propUserId}) {
 	const { tradeId } = useParams();
 	const [trade, setTrade] = useState(null);
 	const [review, setReview] = useState("");
 	const [rating, setRating] = useState(0);
-	const [userId, setUserId] = useState(null);
+	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const getUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser();
-			if (user) {
-				setUserId(user.id);
-			}
-		};
-		getUser();
-	}, []);
+		if (propUserId) {
+			setUserId(propUserId);
+		}
+	}, [propUserId]);
 
 	useEffect(() => {
 		const fetchProfile = async () => {
