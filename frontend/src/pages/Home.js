@@ -132,7 +132,6 @@ function Home({userId: propUserId}) {
                     <div className="home-bottom-right">
                         <div className="home-bottom-right-box">
                             <button className="trade" onClick={handleTrade}>Trade</button>
-                            <button className="trade" onClick={handleNotifications}>Notifications</button>
                         </div>
                     </div>
                 </div>
@@ -175,7 +174,6 @@ function Home({userId: propUserId}) {
                         <button className="trade" onClick={handleNotifications}>Notifications</button>
                         <button className="trade" onClick={handleOngoingTrades}>Ongoing Trades</button>
                         <button className="trade" onClick={handleTradeHistory}>Trade History</button>
-                        <button className="trade" onClick={handleChat}>Chat</button>
                     </div>
                 </div>
             </div>
