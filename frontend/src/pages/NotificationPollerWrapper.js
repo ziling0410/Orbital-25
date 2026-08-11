@@ -1,4 +1,4 @@
-import useNotificationPoller from "./hooks/useNotificationPoller.js";
+import useNotificationPoller from "../hooks/useNotificationPoller.js";
 
 function NotificationPollerWrapper({ userId }) {
     useNotificationPoller(userId);
