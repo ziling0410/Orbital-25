@@ -148,7 +148,7 @@ function Trade({userId: propUserId}) {
 				<ChatWidget
 					userId={userId}
 					peerId={trade["userA_id"] === userId ? trade["userB_id"] : trade["userA_id"]}
-					wsUrl="wss://orbital-25-kjmn.onrender.com"
+					wsUrl={process.env.REACT_APP_WS_URL}
 				/>
 				<div className="trade-center-left">
 					<div className="trade-center-left-box">

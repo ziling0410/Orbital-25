@@ -15,15 +15,18 @@ import io
 import os
 
 app = Flask(__name__, template_folder = "./templates")
-CORS(app)
+
+FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "*")
+CORS(app, origins=[FRONTEND_ORIGIN] if FRONTEND_ORIGIN != "*" else "*")
+
 bcrypt = Bcrypt(app)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins=FRONTEND_ORIGIN)
 
 mongo_url = os.environ.get("MONGODB_URI")
 client = MongoClient(mongo_url)
-db = client["merchmates"] # Creates "merchmates" database
-users = db["users"] # Creates "users" collection within "merchmates" database
+db = client["merchmates"]
+users = db["users"]
 trade_listings = db["trade_listings"]
 ongoing_trades = db["ongoing_trades"]
 notifications = db["notifications"]
@@ -49,15 +52,14 @@ def handle_join(data):
     join_room(room)
     print(f"User {user_id} joined room {room}")
     
-    # Optionally: send previous messages from your DB to the client
     chat_msgs = list(messages.find({
         "$or": [
             {"senderId": user_id, "recipientId": peer_id},
             {"senderId": peer_id, "recipientId": user_id}
         ]
     }).sort("createdAt", 1))
-    # Format the messages before sending
     history = [{
+        "id": str(msg["_id"]),
         "sender": msg["senderId"],
         "recipient": msg["recipientId"],
         "text": msg["text"],
@@ -74,23 +76,23 @@ def handle_chat_message(data):
         return
 
     room = get_room_name(sender, recipient)
+    created_at = datetime.now()
 
-    # Save the message in MongoDB
-    messages.insert_one({
+    inserted = messages.insert_one({
         "senderId": sender,
         "recipientId": recipient,
         "text": text,
-        "createdAt": datetime.now(),
+        "createdAt": created_at,
     })
 
     message = {
+        "id": str(inserted.inserted_id),
         "sender": sender,
         "recipient": recipient,
         "text": text,
-        "createdAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "createdAt": created_at.strftime("%Y-%m-%d %H:%M:%S")
     }
 
-    # Broadcast message to all clients in the room
     emit('chat-message', message, room=room)
 
 @socketio.on('disconnect')
@@ -110,7 +112,7 @@ def save_username():
         return jsonify({"message": "Missing fields"}), 400
 
     if users.find_one({"username": username}):
-        return jsonify({"message": "Username already exists"}), 409 # Return message & 409 Conflict error
+        return jsonify({"message": "Username already exists"}), 409
 
     image_id = fs.put(profilePic, filename = profilePic.filename, content_type = profilePic.content_type)
     users.insert_one({
@@ -120,8 +122,8 @@ def save_username():
         "description": description, 
         "location": location,
         "created_at": datetime.now()})
-    return jsonify({"message": "User registered succesfully"}), 201 # Return message & 201 Created response
-
+    return jsonify({"message": "User registered succesfully"}), 201
+    
 @app.route("/get-profile", methods = ["POST"])
 def get_profile():
     data = request.json
@@ -307,10 +309,10 @@ def start_trade():
         "preferences": listing["preferences"], 
         "haveImageId": listing["haveImageId"], 
         "created_at": datetime.now()})
-    
+        
     notifications.insert_one({
         "recipient_id": listing["user_id"], 
-        "message": f"{user["username"]} has started a trade with you for {listing["have"]}", 
+        "message": f"{user['username']} has started a trade with you for {listing['have']}", 
         "trade_id": str(result.inserted_id), 
         "sender_username": user["username"],
         "created_at": datetime.now(), 
@@ -397,6 +399,9 @@ def reject_trade():
     trade_id = data.get("tradeId")
 
     to_delete = ongoing_trades.find_one({"_id": ObjectId(trade_id)})
+
+    if not to_delete:
+        return jsonify({"message": "Trade not found"}), 404
 
     trade_listings.insert_one({
         "have": to_delete["userB_have"], 
@@ -500,15 +505,15 @@ def check_review():
 @app.route("/get-average-rating", methods = ["GET"])
 def get_average_rating():
     user_id = request.args.get("id")
+    
+    total_reviews = reviews.count_documents({"reviewed_id": user_id})
 
-    all_reviews = reviews.find({"reviewed_id": user_id})
-
-    if not all_reviews:
+    if total_reviews == 0:
         return jsonify({"average_rating": 0, "total_reviews": 0}), 200
 
+    all_reviews = reviews.find({"reviewed_id": user_id})
     total_rating = sum(review["rating"] for review in all_reviews)
-    total_reviews = reviews.count_documents({"reviewed_id": user_id})
-    average_rating = total_rating / total_reviews if total_reviews > 0 else 0
+    average_rating = total_rating / total_reviews
 
     return jsonify({"average_rating": average_rating, "total_reviews": total_reviews}), 200
 
@@ -534,9 +539,6 @@ def get_reviews():
     
     return jsonify(reviews_list), 200
 
-if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000)
-
 @app.route("/chat/messages", methods=["GET"])
 def get_chat_messages():
     user = request.args.get("user")
@@ -553,11 +555,11 @@ def get_chat_messages():
                     {"senderId": peer, "recipientId": user},
                 ]
             }
-        ).sort("createdAt", 1)  # Sort ascending by creation time
+        ).sort("createdAt", 1)
     )
-
+    
     for msg in chat_messages:
-        msg["_id"] = str(msg["_id"])
+        msg["id"] = str(msg.pop("_id"))
         msg["createdAt"] = msg["createdAt"].strftime("%Y-%m-%d %H:%M:%S")
 
     return jsonify(chat_messages), 200
@@ -586,3 +588,6 @@ def send_chat_message():
         return jsonify({"message": "Message sent successfully", "id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Failed to send message"}), 500
+        
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=5000)

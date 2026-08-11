@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./TradeHistory.css";
 
 function TradeHistory({userId: propUserId}) {
@@ -18,7 +19,6 @@ function TradeHistory({userId: propUserId}) {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				console.log("Fetching profile for user ID:", userId);
 				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -41,9 +41,13 @@ function TradeHistory({userId: propUserId}) {
 	}, [userId]);
 
 	const fetchTradeHistory = useCallback(async () => {
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/trade-history?id=${userId}`);
-		const data = await response.json();
-		setTradeHistory(data);
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/trade-history?id=${userId}`);
+			const data = await response.json();
+			setTradeHistory(data);
+		} catch (error) {
+			toast.error("Network error loading trade history: " + error.message);
+		}
 	}, [userId]);
 
 	useEffect(() => {

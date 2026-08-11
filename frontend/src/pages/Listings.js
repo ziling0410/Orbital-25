@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
 import SearchBar from "./SearchBar";
 import "./Listings.css";
 
@@ -9,7 +10,6 @@ function Listings({userId: propUserId}) {
 	const [userId, setUserId] = useState(propUserId);
 	const [userProfile, setUserProfile] = useState(null);
 	const [otherListings, setOtherListings] = useState([]);
-    const [otherIndex, setOtherIndex] = useState(0);
 	const [searchInput, setSearchInput] = useState("");
 	const navigate = useNavigate();
 
@@ -22,7 +22,6 @@ function Listings({userId: propUserId}) {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-                console.log("Fetching profile for user ID:", userId);
 				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -45,9 +44,13 @@ function Listings({userId: propUserId}) {
 	}, [userId]);
 
 	const fetchListings = useCallback(async () => {
-		const responseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?excludeId=${userId}`);
-		const dataOthers = await responseOthers.json();
-		setOtherListings(dataOthers);
+		try {
+			const responseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-listings?excludeId=${userId}`);
+			const dataOthers = await responseOthers.json();
+			setOtherListings(dataOthers);
+		} catch (error) {
+			toast.error("Network error loading listings: " + error.message);
+		}
 	}, [userId]);
 
 	useEffect(() => {
@@ -72,9 +75,13 @@ function Listings({userId: propUserId}) {
 	};
 
 	const handleSearch = async () => {
-		const searchResponseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
-		const searchDataOthers = await searchResponseOthers.json();
-		setOtherListings(searchDataOthers);
+		try {
+			const searchResponseOthers = await fetch(`${process.env.REACT_APP_BACKEND_URL}/search-listings?keyword=${encodeURIComponent(searchInput)}&excludeId=${userId}`);
+			const searchDataOthers = await searchResponseOthers.json();
+			setOtherListings(searchDataOthers);
+		} catch (error) {
+			toast.error("Network error searching listings: " + error.message);
+		}
 	};
 
 	const handleClearSearch = () => {
@@ -82,21 +89,25 @@ function Listings({userId: propUserId}) {
 		setSearchInput("");
 	};
 
-	const handleLike = async () => {
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/start-trade`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ userId, listingId: otherListings[otherIndex]._id }),
-		});
+	const handleLike = async (listingId) => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/start-trade`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ userId, listingId }),
+			});
 
-		const data = await response.json();
+			const data = await response.json();
 
-		if (response.ok) {
-            navigate(`/trade/${data.trade_id}`);
-		} else {
-			console.error("Error liking listing: ", data.message);
+			if (response.ok) {
+				navigate(`/trade/${data.trade_id}`);
+			} else {
+				toast.error("Error liking listing: " + data.message);
+			}
+		} catch (error) {
+			toast.error("Network error starting trade: " + error.message);
 		}
 	};
 
@@ -143,7 +154,7 @@ function Listings({userId: propUserId}) {
 								<td className="listings-col-image"><img src={`${process.env.REACT_APP_BACKEND_URL}${trade.image_url}`} alt="Item" /></td>
 								<td className="listing-col-item">{trade.want}</td>
 								<td className="listings-col-preferences">{trade.preferences}</td>
-								<td className="listings-col-like"><button className="like-button" onClick={handleLike}><FaHeart /></button></td>
+								<td className="listings-col-like"><button className="like-button" onClick={() => handleLike(trade._id)}><FaHeart /></button></td>
 							</tr>
 						))}
 					</tbody>

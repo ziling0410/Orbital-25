@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { supabase } from "../App";
 import "./Register.css";
 
@@ -22,13 +23,15 @@ function Register() {
 		});
 
 		if (error) {
-			alert("Registration failed: " + error.message);
+			toast.error("Registration failed: " + error.message);
+			return;
 		}
 
 		const user = data.user;
 
 		if (!user) {
-			console.log("User creation failed — no user returned.");
+			toast.error("User creation failed — no user returned.");
+			return;
 		}
 
 		const formData = new FormData();
@@ -45,14 +48,14 @@ function Register() {
 			});
 
 			if (response.ok) {
-				alert("Registration successful! Please check your mailbox for the confirmation email. If the link doesn't direct you back to this page, please come back to this page and refresh it to login.");
+				toast.success("Registration successful! Please check your mailbox for the confirmation email. If the link doesn't direct you back to this page, please come back to this page and refresh it to login.");
 				navigate("/");
 			} else {
 				const err = await response.text();
-				console.log("Error saving username: " + err);
+				toast.error("Error saving username: " + err);
 			}
 		} catch (err) {
-			console.log("Network error saving profile: " + err.message);
+			toast.error("Network error saving profile: " + err.message);
 		}
 	};
 		
@@ -62,12 +65,9 @@ function Register() {
 			<input
                 className="input"
 				type = "text"
-				placeholder="Username" // Short hint describing expected value
-                value={username} // value of the input field is set to the username state variable
+				placeholder="Username"
+                value={username}
 				onChange = {event => setUsername(event.target.value)} 
-				// Update the username happens when a user changes the content of the input field 
-				// event - event object React passes when something happens
-				// event.target - HTML element that triggered the event (HTMLInputElement)
 			/>
 			<br />
 			<input

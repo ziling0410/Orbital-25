@@ -20,8 +20,8 @@ import OngoingTrades from "./pages/OngoingTrades.js";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
-	"https://urgdblbvanfbqgthvzgy.supabase.co",
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyZ2RibGJ2YW5mYnFndGh2emd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjEwMjUsImV4cCI6MjA2MzYzNzAyNX0.UpwRG_6XMueuMaBuYutEy_3wsOsA0o6zACJ5x03mrrI"
+	process.env.REACT_APP_SUPABASE_URL,
+	process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
 function App() {
@@ -32,7 +32,6 @@ function App() {
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((_event, session) => {
-			console.log("Auth state changed, session:", session);
 			setSession(session);
 			setUserId(session?.user?.id ?? null);
 		});
@@ -40,9 +39,6 @@ function App() {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setSession(session);
 			setUserId(session?.user?.id ?? null);
-			if (session) {
-				console.log("Valid session on app load:", session.user.id);
-			}
 		});
 
 		return () => subscription.unsubscribe();
@@ -64,7 +60,7 @@ function App() {
 					<Route path = "/ongoing-trades" element = {session ? <OngoingTrades userId = {userId} /> : <Navigate to="/login" />} />
                     <Route path = "/trade-history" element = {session ? <TradeHistory userId = {userId} /> : <Navigate to="/login" />} />
 					<Route path = "/review/:tradeId" element = {session ? <Review userId = {userId} /> : <Navigate to="/login" />} />
-					<Route path = "/chat" element = {session ? (<ChatWidget storageKey = {`chat_${userId}`} users = {[ { id: userId, label: "You" }, { id: "support", label: "Support" }, { id: userId, label: "You" }, { id: "support", label: "Support" } ]} />) : (<Navigate to="/login" />) } />
+					<Route path = "/chat" element = {session ? (<ChatWidget storageKey = {`chat_${userId}`} users = {[ { id: userId, label: "You" }, { id: "support", label: "Support" } ]} />) : (<Navigate to="/login" />) } />
 				</Routes>
 			</BrowserRouter>
 			<ToastContainer position="top-right" autoClose={5000} />

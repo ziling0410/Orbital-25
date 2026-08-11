@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./AddListings.css";
 
 function AddListings({userId: propUserId}) {
@@ -27,17 +28,21 @@ function AddListings({userId: propUserId}) {
 		formData.append("preferences", preferences);
 		formData.append("id", userId);
 		
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/add-listings`, {
-			method: "POST",
-			body: formData,
-		});
-		
-		if (response.ok) {
-			alert("Listing added successfully");
-			navigate("/get-listings");
-		} else {
-			const error = await response.json();
-			alert("Error: " + error.message);
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/add-listings`, {
+				method: "POST",
+				body: formData,
+			});
+
+			if (response.ok) {
+				toast.success("Listing added successfully");
+				navigate("/get-listings");
+			} else {
+				const error = await response.json();
+				toast.error("Error: " + error.message);
+			}
+		} catch (error) {
+			toast.error("Network error adding listing: " + error.message);
 		}
 	};
 	

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../App";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function OngoingTrades({userId: propUserId}) {
 	const [userId, setUserId] = useState(propUserId);
@@ -17,7 +18,6 @@ function OngoingTrades({userId: propUserId}) {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				console.log("Fetching profile for user ID:", userId);
 				const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -40,9 +40,13 @@ function OngoingTrades({userId: propUserId}) {
 	}, [userId]);
 
 	const fetchOngoingTrades = useCallback(async () => {
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-ongoing-trades?id=${userId}`);
-		const data = await response.json();
-		setOngoingTrades(data);
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-ongoing-trades?id=${userId}`);
+			const data = await response.json();
+			setOngoingTrades(data);
+		} catch (error) {
+			toast.error("Network error loading ongoing trades: " + error.message);
+		}
 	}, [userId]);
 
 	useEffect(() => {

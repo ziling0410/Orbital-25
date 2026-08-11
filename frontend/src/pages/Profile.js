@@ -188,7 +188,7 @@ function Profile() {
 				return (
 					<div className="reviews">
 						{reviews.slice(0, 3).map((review) => (
-							<div className="reviews-box">
+							<div className="reviews-box" key={review._id}>
 								<div className="reviews-box-item">
 									{displayReview(review)}
 								</div>

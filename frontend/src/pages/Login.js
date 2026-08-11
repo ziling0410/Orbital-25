@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { supabase } from "../App";
 import "./Login.css";
 
@@ -16,9 +17,9 @@ function Login() {
 		});
 		
 		if (error) {
-			alert("Login failed: " + error.message);
+			toast.error("Login failed: " + error.message);
 		} else {
-			alert("Login successful");
+			toast.success("Login successful");
 			navigate("/");
 		}
 	};

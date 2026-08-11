@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
+import { toast } from "react-toastify";
 import "./Review.css";
 
 function Review({userId: propUserId}) {
@@ -51,10 +52,10 @@ function Review({userId: propUserId}) {
 					const data = await response.json();
 					setTrade(data);
 				} else {
-					console.log("Failed to fetch trade");
+					console.error("Failed to fetch trade");
 				}
 			} catch (error) {
-				console.log("Error fetching trade: ", error);
+				console.error("Error fetching trade: ", error);
 			}
 		};
 
@@ -65,7 +66,6 @@ function Review({userId: propUserId}) {
 
 	const ratingChanged = (newRating) => {
 		setRating(newRating);
-        console.log("Rating changed to:", newRating);
 	}
 
 	const submitReview = async () => {
@@ -76,17 +76,21 @@ function Review({userId: propUserId}) {
 		formData.append("reviewer_id", userId);
 		formData.append("trade_id", tradeId);
 
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/review`, {
-			method: "POST",
-			body: formData,
-		});
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/review`, {
+				method: "POST",
+				body: formData,
+			});
 
-		if (response.ok) {
-			alert("Review added successfully");
-			navigate("/");
-		} else {
-			const error = await response.json();
-			alert("Error: " + error.message);
+			if (response.ok) {
+				toast.success("Review added successfully");
+				navigate("/");
+			} else {
+				const error = await response.json();
+				toast.error("Error: " + error.message);
+			}
+		} catch (error) {
+			toast.error("Network error submitting review: " + error.message);
 		}
 	};
 

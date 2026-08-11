@@ -18,7 +18,6 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
         });
 
         socketRef.current.on("connect", () => {
-            console.log("Connected to socket server"); // <-- Check this console
             setConnected(true);
             socketRef.current.emit("join", { userId, peerId });
         });
@@ -32,7 +31,6 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
         });
 
         socketRef.current.on("disconnect", () => {
-            console.log("Disconnected from socket server");
             setConnected(false);
         });
 
@@ -62,7 +60,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/get-profile`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id: userId })
+                    body: JSON.stringify({ id: peerId })
                 });
                 if (response.ok) {
                     const profileData = await response.json();
@@ -75,10 +73,10 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
             }
         };
 
-        if (userId) {
+        if (peerId) {
             fetchProfile();
         }
-    }, [userId]);
+    }, [peerId]);
 
     const handleSend = (e) => {
         e.preventDefault();
@@ -115,7 +113,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
                 ) : (
                     messages.map((msg, i) => (
                         <div
-                            key={i}
+                            key={msg.id ?? i}
                             className={
                                 "chat-widget__message " +
                                 (msg.sender === userId
