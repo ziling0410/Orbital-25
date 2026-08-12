@@ -114,11 +114,15 @@ def save_username():
     if users.find_one({"username": username}):
         return jsonify({"message": "Username already exists"}), 409
 
-    image_id = fs.put(profilePic, filename = profilePic.filename, content_type = profilePic.content_type)
+    if profilePic and profilePic.filename:
+        image_id = fs.put(profilePic, filename = profilePic.filename, content_type = profilePic.content_type)
+    else:
+        image_id = None
+
     users.insert_one({
         "id": user_id, 
         "username": username, 
-        "profilePictureId": image_id, 
+        "profilePictureId": image_id,   # None if no picture was uploaded
         "description": description, 
         "location": location,
         "created_at": datetime.now()})
@@ -138,8 +142,13 @@ def get_profile():
         return jsonify({"error": "User not found"}), 404
 
     user["_id"] = str(user["_id"])
-    user["image_url"] = f'/image/{str(user["profilePictureId"])}'
-    user["profilePictureId"] = str(user["profilePictureId"])
+
+    if user.get("profilePictureId"):
+        user["image_url"] = f'/image/{str(user["profilePictureId"])}'
+        user["profilePictureId"] = str(user["profilePictureId"])
+    else:
+        user["image_url"] = "/static/default-avatar.png"
+        user["profilePictureId"] = None
 
     return jsonify(user), 200
 
