@@ -97,7 +97,7 @@ function ChatWidget({ userId, peerId, wsUrl, header = "Chat" }) {
     return (
         <div className="chat-widget" role="region" aria-label={`Chat with user ${peerProfile.username}`}>
             <div className="chat-widget__header">
-                {header} with {peerId} {connected ? "🟢" : "🔴"}
+                {header} with {peerProfile.username} {connected ? "🟢" : "🔴"}
             </div>
             <div
                 className="chat-widget__messages"

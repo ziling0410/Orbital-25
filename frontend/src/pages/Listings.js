@@ -135,30 +135,34 @@ function Listings({userId: propUserId}) {
 				</div>
 			</div>
 			<div className="listings-center">
-				<table className="listings-table">
-					<thead>
-						<tr>
-							<th className="listings-col-user">User</th>
-							<th className="listings-col-item">Item To Trade</th>
-							<th className="listings-col-image">Image</th>
-							<th className="listings-col-item">Item Looking For</th>
-							<th className="listings-col-preferences">Preferences</th>
-							<th className="listings-col-like">Initiate Trade</th>
-						</tr>
-					</thead>
-					<tbody>
-						{otherListings.map((trade) => (
-							<tr key={trade._id}>
-								<td className="listings-col-user" onClick={() => navigate(`/profile/${trade.user_id}`)}>{trade.username}</td>
-								<td className="listings-col-item">{trade.have}</td>
-								<td className="listings-col-image"><img src={`${process.env.REACT_APP_BACKEND_URL}${trade.image_url}`} alt="Item" /></td>
-								<td className="listing-col-item">{trade.want}</td>
-								<td className="listings-col-preferences">{trade.preferences}</td>
-								<td className="listings-col-like"><button className="like-button" onClick={() => handleLike(trade._id)}><FaHeart /></button></td>
+				{otherListings.length === 0 ? (
+					<p>No trades available.</p>
+				) : (
+					<table className="listings-table">
+						<thead>
+							<tr>
+								<th className="listings-col-user">User</th>
+								<th className="listings-col-item">Item To Trade</th>
+								<th className="listings-col-image">Image</th>
+								<th className="listings-col-item">Item Looking For</th>
+								<th className="listings-col-preferences">Preferences</th>
+								<th className="listings-col-like">Initiate Trade</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{otherListings.map((trade) => (
+								<tr key={trade._id}>
+									<td className="listings-col-user" onClick={() => navigate(`/profile/${trade.user_id}`)}>{trade.username}</td>
+									<td className="listings-col-item">{trade.have}</td>
+									<td className="listings-col-image"><img src={`${process.env.REACT_APP_BACKEND_URL}${trade.image_url}`} alt="Item" /></td>
+									<td className="listing-col-item">{trade.want}</td>
+									<td className="listings-col-preferences">{trade.preferences}</td>
+									<td className="listings-col-like"><button className="like-button" onClick={() => handleLike(trade._id)}><FaHeart /></button></td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				)}
 			</div>
 			<div className="listings-bottom">
 				<button className="function-button" onClick={() => navigate("/add-listings")}>Add a Listing</button>

@@ -24,6 +24,8 @@ function useNotificationPoller(userId) {
 
                 notifications.forEach((n) => {
                     if (!seenNotificationIds.current.has(n._id)) {
+                        seenNotificationIds.current.add(n._id);
+
                         toast.info(n.message, {
                             autoClose: false,
                             closeOnClick: true,
@@ -37,8 +39,6 @@ function useNotificationPoller(userId) {
                                     },
                                     body: JSON.stringify({ notificationId: n._id }),
                                 });
-
-                                seenNotificationIds.current.add(n._id);
                             },
                         });
                     }

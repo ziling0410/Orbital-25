@@ -1,14 +1,14 @@
 .chat-widget {
-  --chat-bg: #fff;
-  --chat-header-bg: #3f51b5;
-  --chat-header-color: #fff;
-  --chat-accent: #3f51b5;
-  --chat-in-bg: #e3f2fd;
-  --chat-in-color: #1a237e;
-  --chat-out-bg: #ffe082;
-  --chat-out-color: #6d4c41;
+  --chat-bg: #f1ebe5;
+  --chat-header-bg: #333;
+  --chat-header-color: #f1ebe5;
+  --chat-accent: #333;
+  --chat-in-bg: #cdcfc0;
+  --chat-in-color: #333;
+  --chat-out-bg: #f1ebe5;
+  --chat-out-color: #333;
   --chat-radius: 16px;
-  --chat-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  --chat-shadow: 0 2px 8px rgba(0,0,0,0.08);
   --chat-font: Arial, Helvetica, sans-serif;
   --chat-width: 320px;
   --chat-header-height: 48px;
@@ -71,6 +71,7 @@
   background: var(--chat-out-bg);
   color: var(--chat-out-color);
   align-self: flex-end;
+  border: 1px solid #cdcfc0;
 }
 
 .chat-widget__form {
